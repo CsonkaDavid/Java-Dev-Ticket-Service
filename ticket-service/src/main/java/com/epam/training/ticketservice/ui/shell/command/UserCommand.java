@@ -1,7 +1,7 @@
 package com.epam.training.ticketservice.ui.shell.command;
 
-import com.epam.training.ticketservice.core.dao.UserDAO;
-import com.epam.training.ticketservice.core.dto.UserDTO;
+import com.epam.training.ticketservice.core.entity.User;
+import com.epam.training.ticketservice.core.model.UserDTO;
 import com.epam.training.ticketservice.core.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
@@ -51,7 +51,7 @@ public class UserCommand {
 
         String userName = user.get().getUsername();
 
-        if(user.get().getRole() == UserDAO.Role.ADMIN)
+        if(user.get().getRole() == User.Role.ADMIN)
             return "Signed in with privileged account " + userName;
         else
             return "Signed in as " + userName;

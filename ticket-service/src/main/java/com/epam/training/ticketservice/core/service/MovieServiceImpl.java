@@ -1,7 +1,7 @@
 package com.epam.training.ticketservice.core.service;
 
-import com.epam.training.ticketservice.core.dao.MovieDAO;
-import com.epam.training.ticketservice.core.dto.MovieDTO;
+import com.epam.training.ticketservice.core.entity.Movie;
+import com.epam.training.ticketservice.core.model.MovieDTO;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void createMovie(MovieDTO movieDTO) {
-        MovieDAO movieDAO = new MovieDAO(
+        Movie movieDAO = new Movie(
                 null,
                 movieDTO.getTitle(),
                 movieDTO.getGenre(),
@@ -30,7 +30,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void updateMovie(String title, String newGenre, Integer newRunTime) {
-        Optional<MovieDAO> movieDAO = movieRepository.findByTitle(title);
+        Optional<Movie> movieDAO = movieRepository.findByTitle(title);
 
         if(movieDAO.isEmpty()) return;
 
@@ -51,7 +51,7 @@ public class MovieServiceImpl implements MovieService {
                 .collect(Collectors.toList());
     }
 
-    private MovieDTO convertMovieToDTO(MovieDAO movieDAO) {
+    private MovieDTO convertMovieToDTO(Movie movieDAO) {
         return new MovieDTO(
                 movieDAO.getTitle(),
                 movieDAO.getGenre(),

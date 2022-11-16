@@ -1,9 +1,8 @@
 package com.epam.training.ticketservice.ui.shell.command;
 
-import com.epam.training.ticketservice.core.dao.MovieDAO;
-import com.epam.training.ticketservice.core.dao.UserDAO;
-import com.epam.training.ticketservice.core.dto.MovieDTO;
-import com.epam.training.ticketservice.core.dto.UserDTO;
+import com.epam.training.ticketservice.core.entity.User;
+import com.epam.training.ticketservice.core.model.MovieDTO;
+import com.epam.training.ticketservice.core.model.UserDTO;
 import com.epam.training.ticketservice.core.service.MovieService;
 import com.epam.training.ticketservice.core.service.UserService;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
-import org.springframework.shell.standard.ShellOption;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +28,7 @@ public class MovieCommand {
         MovieDTO movieDTO = new MovieDTO(title, genre, runTime);
         movieService.createMovie(movieDTO);
 
-        return movieDTO.getTitle() + " created.";
+        return movieDTO.getTitle() + " created";
     }
 
     @ShellMethodAvailability("isAdminInitiated")
@@ -38,10 +36,17 @@ public class MovieCommand {
     public String updateMovie(String title, String newGenre, Integer newRunTime) {
         movieService.updateMovie(title, newGenre, newRunTime);
 
-        return "Movie updated.";
+        return title + " updated";
     }
 
     @ShellMethodAvailability("isAdminInitiated")
+    @ShellMethod(key = "update movie")
+    public String deleteMovie(String title) {
+        movieService.deleteMovie(title);
+
+        return title +  " deleted";
+    }
+
     @ShellMethod(key = "list movies")
     public String listMovies() {
         List<MovieDTO> movieDAOList = movieService.listMovies();
@@ -56,7 +61,7 @@ public class MovieCommand {
     private Availability isAdminInitiated() {
         Optional<UserDTO> userDTO = userService.getCurrentUser();
 
-        return userDTO.isPresent() && userDTO.get().getRole() == UserDAO.Role.ADMIN
+        return userDTO.isPresent() && userDTO.get().getRole() == User.Role.ADMIN
                 ? Availability.available()
                 : Availability.unavailable("You are not an admin!");
     }
