@@ -16,10 +16,10 @@ public class UserServiceImpl implements UserService {
     private UserDTO currentUser = null;
 
     @Override
-    public Optional<UserDTO> login(String username, String password) {
+    public Optional<UserDTO> signIn(String username, String password) {
         Optional<UserDAO> user = userRepository.findByUsernameAndPassword(username, password);
 
-        if (user.isEmpty()) return Optional.empty();
+        if(user.isEmpty()) return Optional.empty();
 
         currentUser = new UserDTO(user.get().getUsername(), user.get().getRole());
 
@@ -27,7 +27,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDTO> logout() {
+    public Optional<UserDTO> signInPrivileged(String username, String password) {
+        Optional<UserDAO> user = userRepository.findByUsernameAndPassword(username, password);
+
+        if(user.isEmpty()) return Optional.empty();
+        if(user.get().getRole() != UserDAO.Role.ADMIN) return Optional.empty();
+
+        currentUser = new UserDTO(user.get().getUsername(), user.get().getRole());
+
+        return getCurrentUser();
+    }
+
+    @Override
+    public Optional<UserDTO> signOut() {
         Optional<UserDTO> previouslyLoggedInUser = getCurrentUser();
         currentUser = null;
         return previouslyLoggedInUser;
