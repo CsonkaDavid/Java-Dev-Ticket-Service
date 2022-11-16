@@ -1,6 +1,6 @@
 package com.epam.training.ticketservice.core.configuration;
 
-import com.epam.training.ticketservice.core.dao.UserDAO;
+import com.epam.training.ticketservice.core.entity.User;
 import com.epam.training.ticketservice.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -15,7 +15,7 @@ public class InMemoryDatabaseInitializer {
 
     @PostConstruct
     public void init() {
-        UserDAO admin = new UserDAO(null, "admin", "admin", UserDAO.Role.ADMIN);
+        User admin = new User(null, "admin", "admin", User.Role.ADMIN);
         userRepository.save(admin);
     }
 }

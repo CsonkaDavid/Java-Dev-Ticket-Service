@@ -1,4 +1,4 @@
-package com.epam.training.ticketservice.core.dao;
+package com.epam.training.ticketservice.core.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Table(name = "movie")
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovieDAO {
+public class Movie {
     @Id
     @GeneratedValue
     private Integer id;
