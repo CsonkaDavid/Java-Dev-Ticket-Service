@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         Optional<UserDAO> user = userRepository.findByUsernameAndPassword(username, password);
 
         if(user.isEmpty()) return Optional.empty();
-        if(user.get().getRole() != UserDAO.Role.ADMIN) return Optional.empty();
+        if(!user.get().getRole().equals(UserDAO.Role.ADMIN)) return Optional.empty();
 
         currentUser = new UserDTO(user.get().getUsername(), user.get().getRole());
 

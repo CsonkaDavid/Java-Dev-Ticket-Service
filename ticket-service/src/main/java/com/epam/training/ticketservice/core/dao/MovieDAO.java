@@ -8,6 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
+@Table(name = "movie")
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovieDAO {
