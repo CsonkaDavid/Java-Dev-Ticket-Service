@@ -36,7 +36,7 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update room")
     public String updateRoom(String name, Integer rows, Integer columns) {
-        RoomDTO roomDTO = roomService.listRooms().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
+        RoomDTO roomDTO = roomService.getRoomList().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
         roomService.updateRoom(name, roomDTO);
@@ -48,7 +48,7 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete room")
     public String deleteRoom(String name) {
-        RoomDTO roomDTO = roomService.listRooms().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
+        RoomDTO roomDTO = roomService.getRoomList().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
         roomService.deleteRoom(roomDTO);
@@ -59,7 +59,7 @@ public class RoomCommand {
     @SuppressWarnings("unused")
     @ShellMethod(key = "list rooms")
     public String listRooms() {
-        List<RoomDTO> roomDTOList = roomService.listRooms();
+        List<RoomDTO> roomDTOList = roomService.getRoomList();
 
         if(roomDTOList.isEmpty())
             return "There are no rooms at the moment";

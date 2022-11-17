@@ -10,5 +10,5 @@ import java.util.List;
 public interface ScreeningService {
     void createScreening(ScreeningDTO screeningDTO);
     void deleteScreening(MovieDTO movieDTO, RoomDTO roomDTO, Date date);
-    List<ScreeningDTO> listScreenings();
+    List<ScreeningDTO> getScreeningList();
 }

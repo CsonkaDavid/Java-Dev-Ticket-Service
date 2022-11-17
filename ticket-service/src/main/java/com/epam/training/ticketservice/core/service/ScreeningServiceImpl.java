@@ -9,7 +9,7 @@ import com.epam.training.ticketservice.core.model.ScreeningDTO;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
 import com.epam.training.ticketservice.core.repository.ScreeningRepository;
-import com.epam.training.ticketservice.core.timeformat.LocalDateFormatter;
+import com.epam.training.ticketservice.core.time.ApplicationDateFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +24,13 @@ public class ScreeningServiceImpl implements ScreeningService {
     private final ScreeningRepository screeningRepository;
     private final RoomRepository roomRepository;
     private final MovieRepository movieRepository;
-    private final LocalDateFormatter localDateFormatter;
+    private final ApplicationDateFormatter applicationDateFormatter;
 
     @Override
     public void createScreening(ScreeningDTO screeningDTO) {
 
-        Date date = localDateFormatter.parseToDate(screeningDTO.getFormattedDateTime())
-                .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + localDateFormatter.getPattern()));
+        Date date = applicationDateFormatter.parseStringToDate(screeningDTO.getFormattedDateTime())
+                .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + applicationDateFormatter.getPattern()));
 
         Movie movie = movieRepository.findByTitle(screeningDTO.getMovieTitle())
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
@@ -53,14 +53,14 @@ public class ScreeningServiceImpl implements ScreeningService {
     }
 
     @Override
-    public List<ScreeningDTO> listScreenings() {
+    public List<ScreeningDTO> getScreeningList() {
         return screeningRepository.findAll().stream()
                 .map(this::convertScreeningToDTO).collect(Collectors.toList());
     }
 
     private ScreeningDTO convertScreeningToDTO(Screening screening) {
 
-        String formattedDate = localDateFormatter.convertDateToString(screening.getDate());
+        String formattedDate = applicationDateFormatter.convertDateToString(screening.getDate());
 
         return new ScreeningDTO(screening.getMovie().getTitle(), screening.getRoom().getName(), formattedDate);
     }
