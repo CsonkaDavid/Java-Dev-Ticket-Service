@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,25 +17,23 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void createRoom(RoomDTO roomDTO) {
-        Room room = new Room(null, roomDTO.getName(), roomDTO.getRows(), roomDTO.getColumns());
-
-        roomRepository.save(room);
+        roomRepository.save(new Room(null, roomDTO.getName(), roomDTO.getRows(), roomDTO.getColumns()));
     }
 
     @Override
-    public void updateRoom(String name, Integer rows, Integer columns) {
-        Optional<Room> room = roomRepository.findByName(name);
+    public void updateRoom(String name, RoomDTO roomDTO) {
+        Room room = roomRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        if(room.isEmpty()) return;
-
-        roomRepository.updateMovie(room.get().getName(), rows, columns);
+        roomRepository.updateMovie(room.getName(), roomDTO.getRows(), roomDTO.getColumns());
     }
 
     @Override
-    public void deleteRoom(String name) {
-        if(roomRepository.findByName(name).isEmpty()) return;
+    public void deleteRoom(RoomDTO roomDTO) {
+        Room room = roomRepository.findByName(roomDTO.getName())
+                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        roomRepository.deleteByName(name);
+        roomRepository.delete(room);
     }
 
     @Override

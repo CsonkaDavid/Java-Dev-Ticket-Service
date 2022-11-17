@@ -17,6 +17,4 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     @Modifying
     @Query("update Room r set r.rows = :rows, r.columns = :columns where r.name = :name")
     void updateMovie(String name, Integer rows, Integer columns);
-
-    void deleteByName(String name);
 }

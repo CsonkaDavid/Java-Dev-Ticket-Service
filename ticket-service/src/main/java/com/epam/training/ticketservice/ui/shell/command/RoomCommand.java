@@ -29,25 +29,31 @@ public class RoomCommand {
         RoomDTO roomDTO = new RoomDTO(name, rows, columns);
         roomService.createRoom(roomDTO);
 
-        return roomDTO.getName() + " created";
+        return roomDTO + " created";
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update room")
     public String updateRoom(String name, Integer rows, Integer columns) {
-        roomService.updateRoom(name, rows, columns);
+        RoomDTO roomDTO = roomService.listRooms().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        return name + " updated";
+        roomService.updateRoom(name, roomDTO);
+
+        return roomDTO + " updated";
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete room")
     public String deleteRoom(String name) {
-        roomService.deleteRoom(name);
+        RoomDTO roomDTO = roomService.listRooms().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        return name +  " deleted";
+        roomService.deleteRoom(roomDTO);
+
+        return roomDTO +  " deleted";
     }
 
     @SuppressWarnings("unused")

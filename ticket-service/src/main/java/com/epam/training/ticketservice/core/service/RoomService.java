@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface RoomService {
     void createRoom(RoomDTO roomDTO);
-    void updateRoom(String name, Integer rows, Integer columns);
-    void deleteRoom(String name);
+    void updateRoom(String name, RoomDTO roomDTO);
+    void deleteRoom(RoomDTO roomDTO);
     List<RoomDTO> listRooms();
 }

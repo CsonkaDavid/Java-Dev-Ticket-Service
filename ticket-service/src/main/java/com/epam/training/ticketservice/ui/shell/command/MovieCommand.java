@@ -29,25 +29,30 @@ public class MovieCommand {
         MovieDTO movieDTO = new MovieDTO(title, genre, runTime);
         movieService.createMovie(movieDTO);
 
-        return movieDTO.getTitle() + " created";
+        return movieDTO + " created";
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update movie")
-    public String updateMovie(String title, String newGenre, Integer newRunTime) {
-        movieService.updateMovie(title, newGenre, newRunTime);
+    public String updateMovie(String title, String genre, Integer runTime) {
+        MovieDTO movieDTO = new MovieDTO(title, genre, runTime);
 
-        return title + " updated";
+        movieService.updateMovie(title, movieDTO);
+
+        return movieDTO + " updated";
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete movie")
     public String deleteMovie(String title) {
-        movieService.deleteMovie(title);
+        MovieDTO movieDTO = movieService.listMovies().stream().filter(mDTO -> mDTO.getTitle().equals(title)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
 
-        return title +  " deleted";
+        movieService.deleteMovie(movieDTO);
+
+        return movieDTO +  " deleted";
     }
 
     @SuppressWarnings("unused")

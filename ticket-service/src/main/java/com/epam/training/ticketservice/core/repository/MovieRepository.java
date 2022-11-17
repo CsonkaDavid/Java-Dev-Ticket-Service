@@ -17,6 +17,4 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
     @Modifying
     @Query("update Movie m set m.genre = :genre, m.runTime = :runTime where m.title = :title")
     void updateMovie(String title, String genre, Integer runTime);
-
-    void deleteByTitle(String title);
 }

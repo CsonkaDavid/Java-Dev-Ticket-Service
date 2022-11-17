@@ -18,30 +18,28 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void createMovie(MovieDTO movieDTO) {
-        Movie movieDAO = new Movie(
+        movieRepository.save(new Movie(
                 null,
                 movieDTO.getTitle(),
                 movieDTO.getGenre(),
                 movieDTO.getRunTime()
-        );
-
-        movieRepository.save(movieDAO);
+        ));
     }
 
     @Override
-    public void updateMovie(String title, String genre, Integer runTime) {
-        Optional<Movie> movieDAO = movieRepository.findByTitle(title);
+    public void updateMovie(String title, MovieDTO movieDTO) {
+        Movie movie = movieRepository.findByTitle(title)
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
 
-        if(movieDAO.isEmpty()) return;
-
-        movieRepository.updateMovie(movieDAO.get().getTitle(), genre, runTime);
+        movieRepository.updateMovie(movie.getTitle(), movieDTO.getGenre(), movieDTO.getRunTime());
     }
 
     @Override
-    public void deleteMovie(String title) {
-        if(movieRepository.findByTitle(title).isEmpty()) return;
+    public void deleteMovie(MovieDTO movieDTO) {
+        Movie movie = movieRepository.findByTitle(movieDTO.getTitle())
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
 
-        movieRepository.deleteByTitle(title);
+        movieRepository.delete(movie);
     }
 
     @Override
