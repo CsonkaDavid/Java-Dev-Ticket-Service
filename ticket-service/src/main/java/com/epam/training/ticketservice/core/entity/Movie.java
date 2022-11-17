@@ -15,9 +15,12 @@ public class Movie {
     @Id
     @GeneratedValue
     private Integer id;
+
     @Column(unique = true)
     private String title;
+
     private String genre;
+
     @Column(name = "run_time")
     private Integer runTime;
 }

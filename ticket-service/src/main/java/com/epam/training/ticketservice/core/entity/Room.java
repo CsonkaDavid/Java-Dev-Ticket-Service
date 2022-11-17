@@ -15,8 +15,11 @@ public class Room {
     @Id
     @GeneratedValue
     private Integer id;
+
     @Column(unique = true)
     private String name;
+
     private Integer rows;
+
     private Integer columns;
 }
