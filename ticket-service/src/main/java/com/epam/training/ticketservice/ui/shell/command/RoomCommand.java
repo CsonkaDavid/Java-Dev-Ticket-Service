@@ -69,7 +69,7 @@ public class RoomCommand {
             Integer rows = roomDTO.getRows();
             Integer columns = roomDTO.getColumns();
 
-            return "Room " + roomDTO.getName() + " with " + rows * columns + "seats, " + rows + " rows and " + columns + " columns";
+            return "Room " + roomDTO.getName() + " with " + rows * columns + " seats, " + rows + " rows and " + columns + " columns";
 
         }).collect(Collectors.joining("\n"));
     }

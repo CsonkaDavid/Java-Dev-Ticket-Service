@@ -9,10 +9,11 @@ import com.epam.training.ticketservice.core.model.ScreeningDTO;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
 import com.epam.training.ticketservice.core.repository.ScreeningRepository;
+import com.epam.training.ticketservice.core.timeformat.LocalDateFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +24,14 @@ public class ScreeningServiceImpl implements ScreeningService {
     private final ScreeningRepository screeningRepository;
     private final RoomRepository roomRepository;
     private final MovieRepository movieRepository;
+    private final LocalDateFormatter localDateFormatter;
 
     @Override
     public void createScreening(ScreeningDTO screeningDTO) {
-        Date date = Date.valueOf(screeningDTO.getFormattedDateTime());
+
+        Date date = localDateFormatter.parseToDate(screeningDTO.getFormattedDateTime())
+                .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + localDateFormatter.getPattern()));
+
         Movie movie = movieRepository.findByTitle(screeningDTO.getMovieTitle())
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
 
@@ -48,12 +53,15 @@ public class ScreeningServiceImpl implements ScreeningService {
     }
 
     @Override
-    public List<ScreeningDTO> listMovies() {
+    public List<ScreeningDTO> listScreenings() {
         return screeningRepository.findAll().stream()
                 .map(this::convertScreeningToDTO).collect(Collectors.toList());
     }
 
     private ScreeningDTO convertScreeningToDTO(Screening screening) {
-        return new ScreeningDTO(screening.getMovie().getTitle(), screening.getRoom().getName(), screening.getDate().toString());
+
+        String formattedDate = localDateFormatter.convertDateToString(screening.getDate());
+
+        return new ScreeningDTO(screening.getMovie().getTitle(), screening.getRoom().getName(), formattedDate);
     }
 }
