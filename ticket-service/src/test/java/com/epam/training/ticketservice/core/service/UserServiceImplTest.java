@@ -17,7 +17,7 @@ class UserServiceImplTest {
     private final UserService testUserService = new UserServiceImpl(userRepository);
 
     @Test
-    void testSignInNonPrivilegedUserWhenUsernameAndPasswordAreCorrect() {
+    void testSignInNonPrivilegedUserShouldReturnCurrentOptionalUserWhenUsernameAndPasswordAreCorrect() {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
         Optional<User> expected = Optional.of(user);
@@ -33,7 +33,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testSignInNonPrivilegedUserWhenUsernameAndPasswordAreIncorrect() {
+    void testSignInNonPrivilegedUserShouldReturnOptionalEmptyWhenUsernameAndPasswordAreIncorrect() {
         // Given
         Optional<UserDTO> expected = Optional.empty();
         when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.empty());
@@ -47,7 +47,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testSignInPrivilegedUserWhenUsernameAndPasswordAreCorrect() {
+    void testSignInPrivilegedUserShouldReturnCurrentOptionalUserWhenUsernameAndPasswordAreCorrect() {
         // Given
         User user = new User(null,"admin", "admin", User.Role.ADMIN);
         Optional<User> expected = Optional.of(user);
@@ -63,7 +63,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testSignInPrivilegedUserWhenUsernameAndPasswordAreIncorrect() {
+    void testSignInPrivilegedUserShouldReturnOptionalEmptyWhenUsernameAndPasswordAreIncorrect() {
         // Given
         Optional<UserDTO> expected = Optional.empty();
         when(userRepository.findByUsernameAndPassword("admin", "admin")).thenReturn(Optional.empty());
@@ -77,7 +77,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testSignInPrivilegedUserWhenUsernameAndPasswordAreCorrectAndUserIsNotAdmin() {
+    void testSignInPrivilegedUserShouldReturnOptionalEmptyWhenUsernameAndPasswordAreCorrectAndUserIsNotAdmin() {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
         Optional<UserDTO> expected = Optional.empty();
@@ -92,7 +92,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testSignOutUserWhenSignedIn() {
+    void testSignOutUserShouldReturnPreviouslySignedInOptionalUserWhenSignedIn() {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
         when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.of(user));
@@ -107,7 +107,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testSignOutUserWhenNotSignedIn() {
+    void testSignOutUserShouldReturnOptionalEmptyWhenNotSignedIn() {
         // Given
         Optional<UserDTO> expected = Optional.empty();
 
@@ -119,7 +119,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetCurrentUserWhenSignedInNonPrivileged() {
+    void testGetCurrentUserShouldReturnCurrentOptionalUserWhenSignedInNonPrivileged() {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
         when(userRepository.findByUsernameAndPassword("user", "pass")).thenReturn(Optional.of(user));
@@ -134,7 +134,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetCurrentUserWhenSignedInPrivileged() {
+    void testGetCurrentUserShouldReturnCurrentOptionalUserWhenSignedInPrivileged() {
         // Given
         User user = new User(null,"admin", "admin", User.Role.ADMIN);
         when(userRepository.findByUsernameAndPassword("admin", "admin")).thenReturn(Optional.of(user));
@@ -149,7 +149,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testGetCurrentUserWhenNotSignedIn() {
+    void testGetCurrentUserShouldReturnOptionalEmptyWhenNotSignedIn() {
         // Given
         Optional<UserDTO> expected = Optional.empty();
 
