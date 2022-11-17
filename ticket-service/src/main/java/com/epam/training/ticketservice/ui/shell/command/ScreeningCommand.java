@@ -77,14 +77,16 @@ public class ScreeningCommand {
         if(screeningDTOList.isEmpty())
             return "There are no screenings";
 
-        return screeningDTOList.stream().map(screeningDTO -> {
+        return screeningDTOList.stream()
+                .map(screeningDTO -> {
+                    MovieDTO movieDTO = movieService.findMovieByTitle(screeningDTO.getMovieTitle());
 
-            MovieDTO movieDTO = movieService.findMovieByTitle(screeningDTO.getMovieTitle());
+                    return movieDTO.getTitle() + "(" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
+                            screeningDTO.getRoomName() + ", at " + screeningDTO.getFormattedDateTime();
 
-            return movieDTO.getTitle() + "(" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
-                    screeningDTO.getRoomName() + ", at " + screeningDTO.getFormattedDateTime();
+                })
 
-        }).collect(Collectors.joining("\n"));
+                .collect(Collectors.joining("\n"));
     }
 
     @SuppressWarnings("unused")
@@ -114,7 +116,16 @@ public class ScreeningCommand {
 
                     Date checkedMovieEnding = applicationDateHandler.addMinutesToDate(checkedMovieDate, checkedMovieDTO.getRunTime());
 
-                    return (currentMovieDate.compareTo(checkedMovieEnding) <= 0) || (checkedMovieDate.compareTo(currentMovieEndingDate) <= 0);
+                    boolean beginsAfter = false;
+                    boolean endsBefore = false;
+
+                    if((currentMovieDate.compareTo(checkedMovieDate) >= 0) && (currentMovieDate.compareTo(checkedMovieEnding) >= 0))
+                        beginsAfter = true;
+
+                    if((currentMovieDate.compareTo(checkedMovieDate) <= 0) && (currentMovieEndingDate.compareTo(checkedMovieDate) <= 0))
+                        endsBefore = true;
+
+                    return !(beginsAfter || endsBefore);
                 })
                 .findFirst();
 
