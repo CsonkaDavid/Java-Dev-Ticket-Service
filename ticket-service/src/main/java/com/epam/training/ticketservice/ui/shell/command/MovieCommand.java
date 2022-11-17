@@ -47,7 +47,8 @@ public class MovieCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete movie")
     public String deleteMovie(String title) {
-        MovieDTO movieDTO = movieService.findMovieByTitle(title);
+        MovieDTO movieDTO = movieService.findMovieByTitle(title)
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
         movieService.deleteMovie(movieDTO);
 
@@ -62,7 +63,8 @@ public class MovieCommand {
         if(movieDAOList.isEmpty())
             return "There are no movies at the moment";
 
-        return movieDAOList.stream().map(movieDTO -> movieDTO.getTitle() + "(" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes)")
+        return movieDAOList.stream().map(
+                movieDTO -> movieDTO.getTitle() + "(" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes)")
                 .collect(Collectors.joining("\n"));
     }
 

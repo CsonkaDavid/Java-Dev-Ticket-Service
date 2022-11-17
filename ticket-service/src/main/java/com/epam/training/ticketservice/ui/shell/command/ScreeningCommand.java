@@ -40,9 +40,11 @@ public class ScreeningCommand {
 
         ScreeningDTO screeningDTO = new ScreeningDTO(movieTitle, roomName, formattedDateTime);
 
-        MovieDTO movieDTO = movieService.findMovieByTitle(movieTitle);
+        MovieDTO movieDTO = movieService.findMovieByTitle(movieTitle)
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-        RoomDTO roomDTO = roomService.findRoomByName(roomName);
+        RoomDTO roomDTO = roomService.findRoomByName(roomName)
+                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
         if(isOverlapping(screeningDTO, movieDTO, roomDTO))
             return "There is an overlapping screening";
@@ -56,9 +58,12 @@ public class ScreeningCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete screening")
     public String deleteScreening(String movieTitle, String roomName, String formattedDateTime) {
-        MovieDTO movieDTO = movieService.findMovieByTitle(movieTitle);
+        MovieDTO movieDTO = movieService.findMovieByTitle(movieTitle)
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-        RoomDTO roomDTO = roomService.findRoomByName(roomName);
+        RoomDTO roomDTO = roomService.findRoomByName(roomName)
+                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
+
 
         Date date = applicationDateFormatter.parseStringToDate(formattedDateTime)
                 .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + applicationDateFormatter.getPattern()));
@@ -88,7 +93,8 @@ public class ScreeningCommand {
                             return date1.compareTo(date2);
                         })
                 .map(screeningDTO -> {
-                    MovieDTO movieDTO = movieService.findMovieByTitle(screeningDTO.getMovieTitle());
+                    MovieDTO movieDTO = movieService.findMovieByTitle(screeningDTO.getMovieTitle())
+                            .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
                     return movieDTO.getTitle() + "(" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
                             screeningDTO.getRoomName() + ", at " + screeningDTO.getFormattedDateTime();
@@ -121,7 +127,8 @@ public class ScreeningCommand {
                     Date checkedMovieDate = applicationDateFormatter.parseStringToDate(sDTO.getFormattedDateTime()).orElseThrow(
                             () -> new IllegalArgumentException("There is no screening with the given parameters!"));
 
-                    MovieDTO checkedMovieDTO = movieService.findMovieByTitle(sDTO.getMovieTitle());
+                    MovieDTO checkedMovieDTO = movieService.findMovieByTitle(sDTO.getMovieTitle())
+                            .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
                     Date checkedMovieEnding = applicationDateHandler.addMinutesToDate(checkedMovieDate, checkedMovieDTO.getRunTime());
 

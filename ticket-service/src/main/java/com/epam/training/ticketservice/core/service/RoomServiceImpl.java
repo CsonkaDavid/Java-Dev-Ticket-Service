@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +38,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public RoomDTO findRoomByName(String name) {
-        return convertRoomToDTO(roomRepository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!")));
+    public Optional<RoomDTO> findRoomByName(String name) {
+        return convertRoomToDTO(roomRepository.findByName(name));
     }
 
     @Override
@@ -51,5 +51,9 @@ public class RoomServiceImpl implements RoomService {
 
     private RoomDTO convertRoomToDTO(Room room) {
         return new RoomDTO(room.getName(), room.getRows(), room.getColumns());
+    }
+
+    private Optional<RoomDTO> convertRoomToDTO(Optional<Room> room) {
+        return room.isEmpty() ? Optional.empty() : Optional.of(convertRoomToDTO(room.get()));
     }
 }
