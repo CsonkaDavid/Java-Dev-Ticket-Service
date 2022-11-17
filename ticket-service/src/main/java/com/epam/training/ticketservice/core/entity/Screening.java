@@ -1,12 +1,12 @@
 package com.epam.training.ticketservice.core.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Data
@@ -25,6 +25,6 @@ public class Screening {
     @ManyToOne
     private Room room;
 
-    @JsonFormat(pattern = "YYYY-MM-DD hh:mm")
+    @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm")
     private Date date;
 }
