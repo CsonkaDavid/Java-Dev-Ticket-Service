@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +29,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public void updateMovie(String title, MovieDTO movieDTO) {
         Movie movie = movieRepository.findByTitle(title)
-                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
         movieRepository.updateMovie(movie.getTitle(), movieDTO.getGenre(), movieDTO.getRunTime());
     }
@@ -36,15 +37,14 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public void deleteMovie(MovieDTO movieDTO) {
         Movie movie = movieRepository.findByTitle(movieDTO.getTitle())
-                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
         movieRepository.delete(movie);
     }
 
     @Override
-    public MovieDTO findMovieByTitle(String title) {
-        return convertMovieToDTO(movieRepository.findByTitle(title)
-                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!")));
+    public Optional<MovieDTO> findMovieByTitle(String title) {
+        return convertMovieToDTO(movieRepository.findByTitle(title));
     }
 
     @Override
@@ -60,5 +60,9 @@ public class MovieServiceImpl implements MovieService {
                 movieDAO.getGenre(),
                 movieDAO.getRunTime()
         );
+    }
+
+    private Optional<MovieDTO> convertMovieToDTO(Optional<Movie> movie) {
+        return movie.isEmpty() ? Optional.empty() : Optional.of(convertMovieToDTO(movie.get()));
     }
 }
