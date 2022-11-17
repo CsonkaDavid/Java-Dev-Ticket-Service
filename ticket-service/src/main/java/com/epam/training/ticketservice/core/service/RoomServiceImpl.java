@@ -37,7 +37,13 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomDTO> listRooms() {
+    public RoomDTO findRoomByName(String name) {
+        return convertRoomToDTO(roomRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!")));
+    }
+
+    @Override
+    public List<RoomDTO> getRoomList() {
         return roomRepository.findAll().stream()
                 .map(this::convertRoomToDTO)
                 .collect(Collectors.toList());

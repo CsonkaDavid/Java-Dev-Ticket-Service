@@ -8,5 +8,6 @@ public interface RoomService {
     void createRoom(RoomDTO roomDTO);
     void updateRoom(String name, RoomDTO roomDTO);
     void deleteRoom(RoomDTO roomDTO);
-    List<RoomDTO> listRooms();
+    RoomDTO findRoomByName(String name);
+    List<RoomDTO> getRoomList();
 }
