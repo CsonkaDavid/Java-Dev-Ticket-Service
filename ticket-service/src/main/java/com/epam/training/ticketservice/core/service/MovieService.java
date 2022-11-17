@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface MovieService {
     void createMovie(MovieDTO movieDTO);
-    void updateMovie(String title, String newGenre, Integer newRunTime);
+    void updateMovie(String title, String genre, Integer runTime);
     void deleteMovie(String title);
     List<MovieDTO> listMovies();
 }

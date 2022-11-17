@@ -29,12 +29,12 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void updateMovie(String title, String newGenre, Integer newRunTime) {
+    public void updateMovie(String title, String genre, Integer runTime) {
         Optional<Movie> movieDAO = movieRepository.findByTitle(title);
 
         if(movieDAO.isEmpty()) return;
 
-        movieRepository.updateMovie(movieDAO.get().getTitle(), newGenre, newRunTime);
+        movieRepository.updateMovie(movieDAO.get().getTitle(), genre, runTime);
     }
 
     @Override
