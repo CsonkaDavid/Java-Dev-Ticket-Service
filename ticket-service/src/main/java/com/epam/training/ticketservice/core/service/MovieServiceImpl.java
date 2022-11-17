@@ -42,7 +42,13 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<MovieDTO> listMovies() {
+    public MovieDTO findMovieByTitle(String title) {
+        return convertMovieToDTO(movieRepository.findByTitle(title)
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!")));
+    }
+
+    @Override
+    public List<MovieDTO> getMovieList() {
         return movieRepository.findAll().stream()
                 .map(this::convertMovieToDTO)
                 .collect(Collectors.toList());
