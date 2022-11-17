@@ -15,6 +15,7 @@ public class UserCommand {
 
     private final UserService userService;
 
+    @SuppressWarnings("unused")
     @ShellMethod(key = "sign in privileged", value = "Sign in for users with special privileges")
     public String signInPrivileged(String username, String password) {
         Optional<UserDTO> user = userService.signInPrivileged(username, password);
@@ -24,6 +25,7 @@ public class UserCommand {
         return user.get().getUsername() + " is successfully logged in! Admin commands are available!";
     }
 
+    @SuppressWarnings("unused")
     @ShellMethod(key = "sign in", value = "Sign in for users")
     public String signIn(String username, String password) {
         Optional<UserDTO> user = userService.signIn(username, password);
@@ -33,6 +35,7 @@ public class UserCommand {
         return "Signed in with privileged account " + user.get().getUsername();
     }
 
+    @SuppressWarnings("unused")
     @ShellMethod(key = "sign out")
     public String signOut() {
         Optional<UserDTO> user = userService.signOut();
@@ -42,6 +45,7 @@ public class UserCommand {
         return user.get().getUsername() + " signed out";
     }
 
+    @SuppressWarnings("unused")
     @ShellMethod(key = "describe account", value = "Provides information about the current user")
     public String describe() {
         Optional<UserDTO> user = userService.signOut();

@@ -22,6 +22,7 @@ public class MovieCommand {
     private final MovieService movieService;
     private final UserService userService;
 
+    @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "create movie")
     public String createMovie(String title, String genre, Integer runTime) {
@@ -31,6 +32,7 @@ public class MovieCommand {
         return movieDTO.getTitle() + " created";
     }
 
+    @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update movie")
     public String updateMovie(String title, String newGenre, Integer newRunTime) {
@@ -39,14 +41,16 @@ public class MovieCommand {
         return title + " updated";
     }
 
+    @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
-    @ShellMethod(key = "update movie")
+    @ShellMethod(key = "delete movie")
     public String deleteMovie(String title) {
         movieService.deleteMovie(title);
 
         return title +  " deleted";
     }
 
+    @SuppressWarnings("unused")
     @ShellMethod(key = "list movies")
     public String listMovies() {
         List<MovieDTO> movieDAOList = movieService.listMovies();
@@ -58,6 +62,7 @@ public class MovieCommand {
                 .collect(Collectors.joining("\n"));
     }
 
+    @SuppressWarnings("unused")
     private Availability isAdminInitiated() {
         Optional<UserDTO> userDTO = userService.getCurrentUser();
 
