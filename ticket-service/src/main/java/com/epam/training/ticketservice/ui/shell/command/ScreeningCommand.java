@@ -86,15 +86,6 @@ public class ScreeningCommand {
             return "There are no screenings";
 
         return screeningDTOList.stream()
-                .sorted(
-                        (screeningDTO1, screeningDTO2) -> {
-                            Date date1 = applicationDateFormatter.parseStringToDate(screeningDTO1.getFormattedDateTime())
-                                    .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + applicationDateFormatter.getPattern()));
-                            Date date2 = applicationDateFormatter.parseStringToDate(screeningDTO2.getFormattedDateTime())
-                                    .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + applicationDateFormatter.getPattern()));
-
-                            return date1.compareTo(date2);
-                        })
                 .map(screeningDTO -> {
                     MovieDTO movieDTO = movieService.findMovieByTitle(screeningDTO.getMovieTitle())
                             .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
@@ -103,7 +94,6 @@ public class ScreeningCommand {
                             screeningDTO.getRoomName() + ", at " + screeningDTO.getFormattedDateTime();
 
                 })
-
                 .collect(Collectors.joining("\n"));
     }
 
