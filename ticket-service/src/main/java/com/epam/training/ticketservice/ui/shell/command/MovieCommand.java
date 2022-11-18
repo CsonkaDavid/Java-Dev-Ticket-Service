@@ -69,7 +69,7 @@ public class MovieCommand {
     }
 
     @SuppressWarnings("unused")
-    private Availability isAdminInitiated() {
+    public Availability isAdminInitiated() {
         Optional<UserDTO> userDTO = userService.getCurrentUser();
 
         return userDTO.isPresent() && userDTO.get().getRole() == User.Role.ADMIN

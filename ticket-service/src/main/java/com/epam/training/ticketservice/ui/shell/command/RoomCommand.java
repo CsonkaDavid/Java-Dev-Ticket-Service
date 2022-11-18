@@ -36,14 +36,11 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update room")
     public String updateRoom(String name, Integer rows, Integer columns) {
-        RoomDTO roomDTO = roomService.getRoomList().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
+        RoomDTO updateDTO = new RoomDTO(name, rows, columns);
 
-        RoomDTO updateDTO = new RoomDTO(roomDTO.getName(), rows, columns);
+        roomService.updateRoom(name, updateDTO);
 
-        roomService.updateRoom(roomDTO.getName(), updateDTO);
-
-        return roomDTO + " updated";
+        return name + " updated";
     }
 
     @SuppressWarnings("unused")
