@@ -64,7 +64,7 @@ public class MovieCommand {
             return "There are no movies at the moment";
 
         return movieDAOList.stream().map(
-                movieDTO -> movieDTO.getTitle() + "(" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes)")
+                movieDTO -> movieDTO.getTitle() + " (" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes)")
                 .collect(Collectors.joining("\n"));
     }
 
