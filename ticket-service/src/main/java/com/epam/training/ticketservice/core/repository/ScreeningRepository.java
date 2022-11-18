@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Repository
 public interface ScreeningRepository  extends JpaRepository<Screening, Integer> {
-    void deleteByMovieAndRoomAndDate(Movie movie, Room room, Date date);
+    Optional<Screening> findByMovieAndRoomAndDate(Movie movie, Room room, Date date);
 }

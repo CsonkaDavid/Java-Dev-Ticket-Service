@@ -49,7 +49,10 @@ public class ScreeningServiceImpl implements ScreeningService {
         Room room = roomRepository.findByName(roomDTO.getName())
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        screeningRepository.deleteByMovieAndRoomAndDate(movie, room, date);
+        Screening screening = screeningRepository.findByMovieAndRoomAndDate(movie, room, date)
+                .orElseThrow(() -> new IllegalArgumentException("There is no screening with these parameters!"));
+
+        screeningRepository.delete(screening);
     }
 
     @Override
