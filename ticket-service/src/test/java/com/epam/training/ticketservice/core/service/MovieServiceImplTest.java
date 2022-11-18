@@ -21,6 +21,18 @@ class MovieServiceImplTest {
     private final MovieService testMovieService = new MovieServiceImpl(movieRepository);
 
     @Test
+    void testCreateMovieShouldStoreGivenMovieWhenInputIsValid() {
+        // Given
+        Mockito.when(movieRepository.save(TEST_MOVIE)).thenReturn(TEST_MOVIE);
+
+        // When
+        testMovieService.createMovie(TEST_MOVIE_DTO);
+
+        // Then
+        Mockito.verify(movieRepository).save(TEST_MOVIE);
+    }
+
+    @Test
     void testGetMovieListShouldReturnListWithOneTestElement() {
         //Given
         Mockito.when(movieRepository.findAll()).thenReturn(List.of(TEST_MOVIE));
@@ -32,18 +44,6 @@ class MovieServiceImplTest {
         //Then
         Assertions.assertEquals(expected, actual);
         Mockito.verify(movieRepository).findAll();
-    }
-
-    @Test
-    void testCreateMovieShouldStoreGivenMovieWhenInputIsValid() {
-        // Given
-        Mockito.when(movieRepository.save(TEST_MOVIE)).thenReturn(TEST_MOVIE);
-
-        // When
-        testMovieService.createMovie(TEST_MOVIE_DTO);
-
-        // Then
-        Mockito.verify(movieRepository).save(TEST_MOVIE);
     }
 
     @Test
@@ -59,6 +59,16 @@ class MovieServiceImplTest {
     }
 
     @Test
+    void testUpdateMovieShouldThrowErrorWhenInputIsInvalid() {
+        // Given
+        Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.empty());
+
+        // When Then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> testMovieService.updateMovie(TEST_MOVIE.getTitle(), TEST_MOVIE_DTO));
+        Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
+    }
+
+    @Test
     void testDeleteMovieShouldRemoveGivenMovieWhenInputIsValid() {
         // Given
         Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
@@ -67,6 +77,44 @@ class MovieServiceImplTest {
         testMovieService.deleteMovie(TEST_MOVIE_DTO);
 
         // Then
+        Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
+    }
+
+    @Test
+    void testDeleteMovieShouldThrowErrorWhenInputIsInvalid() {
+        // Given
+        Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.empty());
+
+        // When Then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> testMovieService.deleteMovie(TEST_MOVIE_DTO));
+        Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
+    }
+
+    @Test
+    void testFindMovieByTitleShouldReturnOptionalEmptyWhenInputIsInvalid() {
+        // Given
+        Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.empty());
+        Optional<MovieDTO> expected = Optional.empty();
+
+        // When
+        Optional<MovieDTO> actual = testMovieService.findMovieByTitle(TEST_MOVIE.getTitle());
+
+        // Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
+    }
+
+    @Test
+    void testFindMovieByTitleShouldReturnMovieWhenInputIsValid() {
+        // Given
+        Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+        Optional<MovieDTO> expected = Optional.of(TEST_MOVIE_DTO);
+
+        // When
+        Optional<MovieDTO> actual = testMovieService.findMovieByTitle(TEST_MOVIE.getTitle());
+
+        // Then
+        Assertions.assertEquals(expected, actual);
         Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
     }
 }
