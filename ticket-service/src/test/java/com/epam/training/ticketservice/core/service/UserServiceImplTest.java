@@ -1,7 +1,7 @@
 package com.epam.training.ticketservice.core.service;
 
 import com.epam.training.ticketservice.core.entity.User;
-import com.epam.training.ticketservice.core.model.UserDTO;
+import com.epam.training.ticketservice.core.model.UserDto;
 import com.epam.training.ticketservice.core.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class UserServiceImplTest {
         when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.of(user));
 
         // When
-        Optional<UserDTO> actual = testUserService.signIn("user", "password");
+        Optional<UserDto> actual = testUserService.signIn("user", "password");
 
         // Then
         Assertions.assertEquals(expected.get().getUsername(), actual.get().getUsername());
@@ -35,11 +35,11 @@ class UserServiceImplTest {
     @Test
     void testSignInNonPrivilegedUserShouldReturnOptionalEmptyWhenUsernameAndPasswordAreIncorrect() {
         // Given
-        Optional<UserDTO> expected = Optional.empty();
+        Optional<UserDto> expected = Optional.empty();
         when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.empty());
 
         // When
-        Optional<UserDTO> actual = testUserService.signIn("user", "password");
+        Optional<UserDto> actual = testUserService.signIn("user", "password");
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -54,7 +54,7 @@ class UserServiceImplTest {
         when(userRepository.findByUsernameAndPassword("admin", "admin")).thenReturn(Optional.of(user));
 
         // When
-        Optional<UserDTO> actual = testUserService.signInPrivileged("admin", "admin");
+        Optional<UserDto> actual = testUserService.signInPrivileged("admin", "admin");
 
         // Then
         Assertions.assertEquals(expected.get().getUsername(), actual.get().getUsername());
@@ -65,11 +65,11 @@ class UserServiceImplTest {
     @Test
     void testSignInPrivilegedUserShouldReturnOptionalEmptyWhenUsernameAndPasswordAreIncorrect() {
         // Given
-        Optional<UserDTO> expected = Optional.empty();
+        Optional<UserDto> expected = Optional.empty();
         when(userRepository.findByUsernameAndPassword("admin", "admin")).thenReturn(Optional.empty());
 
         // When
-        Optional<UserDTO> actual = testUserService.signInPrivileged("admin", "admin");
+        Optional<UserDto> actual = testUserService.signInPrivileged("admin", "admin");
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -80,11 +80,11 @@ class UserServiceImplTest {
     void testSignInPrivilegedUserShouldReturnOptionalEmptyWhenUsernameAndPasswordAreCorrectAndUserIsNotAdmin() {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
-        Optional<UserDTO> expected = Optional.empty();
+        Optional<UserDto> expected = Optional.empty();
         when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.of(user));
 
         // When
-        Optional<UserDTO> actual = testUserService.signInPrivileged("user", "password");
+        Optional<UserDto> actual = testUserService.signInPrivileged("user", "password");
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -96,10 +96,10 @@ class UserServiceImplTest {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
         when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.of(user));
-        Optional<UserDTO> expected = testUserService.signIn("user", "password");
+        Optional<UserDto> expected = testUserService.signIn("user", "password");
 
         // When
-        Optional<UserDTO> actual = testUserService.signOut();
+        Optional<UserDto> actual = testUserService.signOut();
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -109,10 +109,10 @@ class UserServiceImplTest {
     @Test
     void testSignOutUserShouldReturnOptionalEmptyWhenNotSignedIn() {
         // Given
-        Optional<UserDTO> expected = Optional.empty();
+        Optional<UserDto> expected = Optional.empty();
 
         // When
-        Optional<UserDTO> actual = testUserService.signOut();
+        Optional<UserDto> actual = testUserService.signOut();
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -123,10 +123,10 @@ class UserServiceImplTest {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
         when(userRepository.findByUsernameAndPassword("user", "pass")).thenReturn(Optional.of(user));
-        Optional<UserDTO> expected = testUserService.signIn("user", "password");
+        Optional<UserDto> expected = testUserService.signIn("user", "password");
 
         // When
-        Optional<UserDTO> actual = testUserService.getCurrentUser();
+        Optional<UserDto> actual = testUserService.getCurrentUser();
 
         // Then
         assertEquals(expected, actual);
@@ -138,10 +138,10 @@ class UserServiceImplTest {
         // Given
         User user = new User(null,"admin", "admin", User.Role.ADMIN);
         when(userRepository.findByUsernameAndPassword("admin", "admin")).thenReturn(Optional.of(user));
-        Optional<UserDTO> expected = testUserService.signInPrivileged("admin", "admin");
+        Optional<UserDto> expected = testUserService.signInPrivileged("admin", "admin");
 
         // When
-        Optional<UserDTO> actual = testUserService.getCurrentUser();
+        Optional<UserDto> actual = testUserService.getCurrentUser();
 
         // Then
         assertEquals(expected, actual);
@@ -151,10 +151,10 @@ class UserServiceImplTest {
     @Test
     void testGetCurrentUserShouldReturnOptionalEmptyWhenNotSignedIn() {
         // Given
-        Optional<UserDTO> expected = Optional.empty();
+        Optional<UserDto> expected = Optional.empty();
 
         // When
-        Optional<UserDTO> actual = testUserService.getCurrentUser();
+        Optional<UserDto> actual = testUserService.getCurrentUser();
 
         // Then
         assertEquals(expected, actual);

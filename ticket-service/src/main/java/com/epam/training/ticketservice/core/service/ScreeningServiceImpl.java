@@ -3,9 +3,9 @@ package com.epam.training.ticketservice.core.service;
 import com.epam.training.ticketservice.core.entity.Movie;
 import com.epam.training.ticketservice.core.entity.Room;
 import com.epam.training.ticketservice.core.entity.Screening;
-import com.epam.training.ticketservice.core.model.MovieDTO;
-import com.epam.training.ticketservice.core.model.RoomDTO;
-import com.epam.training.ticketservice.core.model.ScreeningDTO;
+import com.epam.training.ticketservice.core.model.MovieDto;
+import com.epam.training.ticketservice.core.model.RoomDto;
+import com.epam.training.ticketservice.core.model.ScreeningDto;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
 import com.epam.training.ticketservice.core.repository.ScreeningRepository;
@@ -27,7 +27,7 @@ public class ScreeningServiceImpl implements ScreeningService {
     private final ApplicationDateFormatter applicationDateFormatter;
 
     @Override
-    public void createScreening(ScreeningDTO screeningDTO) {
+    public void createScreening(ScreeningDto screeningDTO) {
 
         Date date = applicationDateFormatter.parseStringToDate(screeningDTO.getFormattedDateTime())
                 .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + applicationDateFormatter.getPattern()));
@@ -42,7 +42,7 @@ public class ScreeningServiceImpl implements ScreeningService {
     }
 
     @Override
-    public void deleteScreening(MovieDTO movieDTO, RoomDTO roomDTO, Date date) {
+    public void deleteScreening(MovieDto movieDTO, RoomDto roomDTO, Date date) {
         Movie movie = movieRepository.findByTitle(movieDTO.getTitle())
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
 
@@ -56,15 +56,15 @@ public class ScreeningServiceImpl implements ScreeningService {
     }
 
     @Override
-    public List<ScreeningDTO> getScreeningList() {
+    public List<ScreeningDto> getScreeningList() {
         return screeningRepository.findAll().stream()
                 .map(this::convertScreeningToDTO).collect(Collectors.toList());
     }
 
-    private ScreeningDTO convertScreeningToDTO(Screening screening) {
+    private ScreeningDto convertScreeningToDTO(Screening screening) {
 
         String formattedDate = applicationDateFormatter.convertDateToString(screening.getDate());
 
-        return new ScreeningDTO(screening.getMovie().getTitle(), screening.getRoom().getName(), formattedDate);
+        return new ScreeningDto(screening.getMovie().getTitle(), screening.getRoom().getName(), formattedDate);
     }
 }

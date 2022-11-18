@@ -1,8 +1,8 @@
 package com.epam.training.ticketservice.ui.shell.command;
 
 import com.epam.training.ticketservice.core.entity.User;
-import com.epam.training.ticketservice.core.model.MovieDTO;
-import com.epam.training.ticketservice.core.model.UserDTO;
+import com.epam.training.ticketservice.core.model.MovieDto;
+import com.epam.training.ticketservice.core.model.UserDto;
 import com.epam.training.ticketservice.core.service.MovieService;
 import com.epam.training.ticketservice.core.service.UserService;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,7 @@ public class MovieCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "create movie")
     public String createMovie(String title, String genre, Integer runTime) {
-        MovieDTO movieDTO = new MovieDTO(title, genre, runTime);
+        MovieDto movieDTO = new MovieDto(title, genre, runTime);
         movieService.createMovie(movieDTO);
 
         return movieDTO + " created";
@@ -36,7 +36,7 @@ public class MovieCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update movie")
     public String updateMovie(String title, String genre, Integer runTime) {
-        MovieDTO movieDTO = new MovieDTO(title, genre, runTime);
+        MovieDto movieDTO = new MovieDto(title, genre, runTime);
 
         movieService.updateMovie(title, movieDTO);
 
@@ -47,7 +47,7 @@ public class MovieCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete movie")
     public String deleteMovie(String title) {
-        MovieDTO movieDTO = movieService.findMovieByTitle(title)
+        MovieDto movieDTO = movieService.findMovieByTitle(title)
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
         movieService.deleteMovie(movieDTO);
@@ -58,7 +58,7 @@ public class MovieCommand {
     @SuppressWarnings("unused")
     @ShellMethod(key = "list movies")
     public String listMovies() {
-        List<MovieDTO> movieDAOList = movieService.getMovieList();
+        List<MovieDto> movieDAOList = movieService.getMovieList();
 
         if(movieDAOList.isEmpty())
             return "There are no movies at the moment";
@@ -70,7 +70,7 @@ public class MovieCommand {
 
     @SuppressWarnings("unused")
     public Availability isAdminInitiated() {
-        Optional<UserDTO> userDTO = userService.getCurrentUser();
+        Optional<UserDto> userDTO = userService.getCurrentUser();
 
         return userDTO.isPresent() && userDTO.get().getRole() == User.Role.ADMIN
                 ? Availability.available()

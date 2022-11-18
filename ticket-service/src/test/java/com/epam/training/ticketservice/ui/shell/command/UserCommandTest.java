@@ -1,7 +1,7 @@
 package com.epam.training.ticketservice.ui.shell.command;
 
 import com.epam.training.ticketservice.core.entity.User;
-import com.epam.training.ticketservice.core.model.UserDTO;
+import com.epam.training.ticketservice.core.model.UserDto;
 import com.epam.training.ticketservice.core.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,9 +12,9 @@ import java.util.Optional;
 class UserCommandTest {
 
     private final UserService userServiceMock = Mockito.mock(UserService.class);
-    private final UserDTO testUserDTO = new UserDTO("user", User.Role.USER);
-    private final UserDTO testAdminDTO = new UserDTO("admin", User.Role.ADMIN);
-    private final User testUser = new User(null, testUserDTO.getUsername(), "password", testUserDTO.getRole());
+    private final UserDto testUserDto = new UserDto("user", User.Role.USER);
+    private final UserDto testAdminDTO = new UserDto("admin", User.Role.ADMIN);
+    private final User testUser = new User(null, testUserDto.getUsername(), "password", testUserDto.getRole());
     private final User testAdmin = new User(null, testAdminDTO.getUsername(), "password", testAdminDTO.getRole());
 
     private final UserCommand testUserCommandComponent = new UserCommand(userServiceMock);
@@ -23,17 +23,17 @@ class UserCommandTest {
     void testSignInCommandShouldSignUserInWhenUserExists() {
         //Given
         Mockito.when(userServiceMock.signIn(testUser.getUsername(), testUser.getPassword()))
-                .thenReturn(Optional.of(testUserDTO));
+                .thenReturn(Optional.of(testUserDto));
 
         Mockito.when(userServiceMock.getCurrentUser())
-                .thenReturn(Optional.of(testUserDTO));
+                .thenReturn(Optional.of(testUserDto));
 
         String expectedOutput = "Signed in with account " + testUser.getUsername();
-        Optional<UserDTO> expectedUserDTO = Optional.of(testUserDTO);
+        Optional<UserDto> expectedUserDTO = Optional.of(testUserDto);
 
         //When
         String actualOutput = testUserCommandComponent.signIn(testUser.getUsername(), testUser.getPassword());
-        Optional<UserDTO> actualUserDTO = userServiceMock.getCurrentUser();
+        Optional<UserDto> actualUserDTO = userServiceMock.getCurrentUser();
 
         //Then
         Assertions.assertEquals(expectedOutput, actualOutput);
@@ -52,11 +52,11 @@ class UserCommandTest {
                 .thenReturn(Optional.empty());
 
         String expectedOutput = "Login failed due to incorrect credentials";
-        Optional<UserDTO> expectedUserDTO = Optional.empty();
+        Optional<UserDto> expectedUserDTO = Optional.empty();
 
         //When
         String actualOutput = testUserCommandComponent.signIn(testUser.getUsername(), testUser.getPassword());
-        Optional<UserDTO> actualUserDTO = userServiceMock.getCurrentUser();
+        Optional<UserDto> actualUserDTO = userServiceMock.getCurrentUser();
 
         //Then
         Assertions.assertEquals(expectedOutput, actualOutput);
@@ -75,11 +75,11 @@ class UserCommandTest {
                 .thenReturn(Optional.of(testAdminDTO));
 
         String expectedOutput = testAdmin.getUsername() + " is successfully logged in! Admin commands are available!";
-        Optional<UserDTO> expectedUserDTO = Optional.of(testAdminDTO);
+        Optional<UserDto> expectedUserDTO = Optional.of(testAdminDTO);
 
         //When
         String actualOutput = testUserCommandComponent.signInPrivileged(testAdmin.getUsername(), testAdmin.getPassword());
-        Optional<UserDTO> actualUserDTO = userServiceMock.getCurrentUser();
+        Optional<UserDto> actualUserDTO = userServiceMock.getCurrentUser();
 
         //Then
         Assertions.assertEquals(expectedOutput, actualOutput);
@@ -98,11 +98,11 @@ class UserCommandTest {
                 .thenReturn(Optional.empty());
 
         String expectedOutput = "Login failed due to incorrect credentials";
-        Optional<UserDTO> expectedUserDTO = Optional.empty();
+        Optional<UserDto> expectedUserDTO = Optional.empty();
 
         //When
         String actualOutput = testUserCommandComponent.signInPrivileged(testAdmin.getUsername(), testAdmin.getPassword());
-        Optional<UserDTO> actualUserDTO = userServiceMock.getCurrentUser();
+        Optional<UserDto> actualUserDTO = userServiceMock.getCurrentUser();
 
         //Then
         Assertions.assertEquals(expectedOutput, actualOutput);
@@ -115,17 +115,17 @@ class UserCommandTest {
     void testSignOutShouldReturnPreviouslyLoggedInUserWhenUserIsLoggedIn() {
         //Given
         Mockito.when(userServiceMock.signOut())
-                .thenReturn(Optional.of(testUserDTO));
+                .thenReturn(Optional.of(testUserDto));
 
         Mockito.when(userServiceMock.getCurrentUser())
                 .thenReturn(Optional.empty());
 
         String expectedOutput = testUser.getUsername() + " signed out";
-        Optional<UserDTO> expectedUserDTO = Optional.empty();
+        Optional<UserDto> expectedUserDTO = Optional.empty();
 
         //When
         String actualOutput = testUserCommandComponent.signOut();
-        Optional<UserDTO> actualUserDTO = userServiceMock.getCurrentUser();
+        Optional<UserDto> actualUserDTO = userServiceMock.getCurrentUser();
 
         //Then
         Assertions.assertEquals(expectedOutput, actualOutput);
@@ -154,7 +154,7 @@ class UserCommandTest {
     void testDescribeShouldReturnUserDescriptionWhenRegularUserIsLoggedIn() {
         //Given
         Mockito.when(userServiceMock.getCurrentUser())
-                .thenReturn(Optional.of(testUserDTO));
+                .thenReturn(Optional.of(testUserDto));
 
         String expectedOutput = "Signed in as " + testUser.getUsername();
 

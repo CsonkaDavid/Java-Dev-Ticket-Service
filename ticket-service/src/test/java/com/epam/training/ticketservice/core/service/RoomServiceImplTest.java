@@ -1,8 +1,7 @@
 package com.epam.training.ticketservice.core.service;
 
 import com.epam.training.ticketservice.core.entity.Room;
-import com.epam.training.ticketservice.core.model.MovieDTO;
-import com.epam.training.ticketservice.core.model.RoomDTO;
+import com.epam.training.ticketservice.core.model.RoomDto;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,7 @@ class RoomServiceImplTest {
     private final RoomService testRoomService = new RoomServiceImpl(roomRepositoryMock);
 
     private final Room TEST_ROOM = new Room(null, "R1", 15, 20);
-    private final RoomDTO TEST_ROOM_DTO = new RoomDTO("R1", 15, 20);
+    private final RoomDto TEST_ROOM_DTO = new RoomDto("R1", 15, 20);
 
     @Test
     void testCreateRoomShouldSaveNewRoomWhenInputIsValid() {
@@ -35,10 +34,10 @@ class RoomServiceImplTest {
     void testGetRoomListShouldReturnListOfTestedElement() {
         //Given
         Mockito.when(roomRepositoryMock.findAll()).thenReturn(List.of(TEST_ROOM));
-        List<RoomDTO> expected = List.of(TEST_ROOM_DTO);
+        List<RoomDto> expected = List.of(TEST_ROOM_DTO);
 
         //When
-        List<RoomDTO> actual = testRoomService.getRoomList();
+        List<RoomDto> actual = testRoomService.getRoomList();
 
         //Then
         Assertions.assertEquals(expected, actual);
@@ -99,10 +98,10 @@ class RoomServiceImplTest {
         // Given
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName()))
                 .thenReturn(Optional.of(TEST_ROOM));
-        Optional<RoomDTO> expected = Optional.of(TEST_ROOM_DTO);
+        Optional<RoomDto> expected = Optional.of(TEST_ROOM_DTO);
 
         // When
-        Optional<RoomDTO> actual = testRoomService.findRoomByName(TEST_ROOM.getName());
+        Optional<RoomDto> actual = testRoomService.findRoomByName(TEST_ROOM.getName());
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -113,10 +112,10 @@ class RoomServiceImplTest {
     void testFindRoomByNameShouldReturnOptionalEmptyWhenInputIsInvalid() {
         // Given
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.empty());
-        Optional<RoomDTO> expected = Optional.empty();
+        Optional<RoomDto> expected = Optional.empty();
 
         // When
-        Optional<RoomDTO> actual = testRoomService.findRoomByName(TEST_ROOM.getName());
+        Optional<RoomDto> actual = testRoomService.findRoomByName(TEST_ROOM.getName());
 
         // Then
         Assertions.assertEquals(expected, actual);

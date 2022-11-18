@@ -4,7 +4,7 @@ import com.epam.training.ticketservice.core.entity.User;
 import lombok.Value;
 
 @Value
-public class UserDTO {
+public class UserDto {
     String username;
     User.Role role;
 }

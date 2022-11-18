@@ -3,9 +3,9 @@ package com.epam.training.ticketservice.core.service;
 import com.epam.training.ticketservice.core.entity.Movie;
 import com.epam.training.ticketservice.core.entity.Room;
 import com.epam.training.ticketservice.core.entity.Screening;
-import com.epam.training.ticketservice.core.model.MovieDTO;
-import com.epam.training.ticketservice.core.model.RoomDTO;
-import com.epam.training.ticketservice.core.model.ScreeningDTO;
+import com.epam.training.ticketservice.core.model.MovieDto;
+import com.epam.training.ticketservice.core.model.RoomDto;
+import com.epam.training.ticketservice.core.model.ScreeningDto;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
 import com.epam.training.ticketservice.core.repository.ScreeningRepository;
@@ -33,15 +33,15 @@ class ScreeningServiceImplTest {
     private final SimpleDateFormat testSimpleDateFormat = new SimpleDateFormat(timePattern);
 
     private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76);
-    private final MovieDTO TEST_MOVIE_DTO = new MovieDTO("Avengers", "action", 76);
+    private final MovieDto TEST_MOVIE_DTO = new MovieDto("Avengers", "action", 76);
 
     private final Room TEST_ROOM = new Room(null, "R1", 15, 20);
-    private final RoomDTO TEST_ROOM_DTO = new RoomDTO("R1", 15, 20);
+    private final RoomDto TEST_ROOM_DTO = new RoomDto("R1", 15, 20);
 
     private final String testTime = "2022-12-12 12:00";
 
-    private final ScreeningDTO TEST_SCREENING_DTO =
-            new ScreeningDTO(TEST_MOVIE_DTO.getTitle(), TEST_ROOM_DTO.getName(), "2022-12-12 12:00");
+    private final ScreeningDto TEST_SCREENING_DTO =
+            new ScreeningDto(TEST_MOVIE_DTO.getTitle(), TEST_ROOM_DTO.getName(), "2022-12-12 12:00");
 
     @Test
     void testCreateScreeningShouldCreateNewScreeningWhenInputIsValid() throws ParseException {
@@ -225,10 +225,10 @@ class ScreeningServiceImplTest {
 
         Mockito.when(screeningRepositoryMock.findAll()).thenReturn(List.of(TEST_SCREENING));
 
-        List<ScreeningDTO> expected = List.of(TEST_SCREENING_DTO);
+        List<ScreeningDto> expected = List.of(TEST_SCREENING_DTO);
 
         //When
-        List<ScreeningDTO> actual = testScreeningService.getScreeningList();
+        List<ScreeningDto> actual = testScreeningService.getScreeningList();
 
         //Then
         Assertions.assertEquals(expected, actual);

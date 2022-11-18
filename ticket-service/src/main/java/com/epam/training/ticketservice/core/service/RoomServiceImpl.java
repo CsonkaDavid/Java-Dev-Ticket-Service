@@ -1,7 +1,7 @@
 package com.epam.training.ticketservice.core.service;
 
 import com.epam.training.ticketservice.core.entity.Room;
-import com.epam.training.ticketservice.core.model.RoomDTO;
+import com.epam.training.ticketservice.core.model.RoomDto;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,12 +17,12 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
 
     @Override
-    public void createRoom(RoomDTO roomDTO) {
+    public void createRoom(RoomDto roomDTO) {
         roomRepository.save(new Room(null, roomDTO.getName(), roomDTO.getRows(), roomDTO.getColumns()));
     }
 
     @Override
-    public void updateRoom(String name, RoomDTO roomDTO) {
+    public void updateRoom(String name, RoomDto roomDTO) {
         Room room = roomRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
@@ -30,7 +30,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void deleteRoom(RoomDTO roomDTO) {
+    public void deleteRoom(RoomDto roomDTO) {
         Room room = roomRepository.findByName(roomDTO.getName())
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
@@ -38,22 +38,22 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Optional<RoomDTO> findRoomByName(String name) {
+    public Optional<RoomDto> findRoomByName(String name) {
         return convertRoomToDTO(roomRepository.findByName(name));
     }
 
     @Override
-    public List<RoomDTO> getRoomList() {
+    public List<RoomDto> getRoomList() {
         return roomRepository.findAll().stream()
                 .map(this::convertRoomToDTO)
                 .collect(Collectors.toList());
     }
 
-    private RoomDTO convertRoomToDTO(Room room) {
-        return new RoomDTO(room.getName(), room.getRows(), room.getColumns());
+    private RoomDto convertRoomToDTO(Room room) {
+        return new RoomDto(room.getName(), room.getRows(), room.getColumns());
     }
 
-    private Optional<RoomDTO> convertRoomToDTO(Optional<Room> room) {
+    private Optional<RoomDto> convertRoomToDTO(Optional<Room> room) {
         return room.isEmpty() ? Optional.empty() : Optional.of(convertRoomToDTO(room.get()));
     }
 }

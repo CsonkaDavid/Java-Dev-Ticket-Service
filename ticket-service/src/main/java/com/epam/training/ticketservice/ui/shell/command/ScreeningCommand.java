@@ -1,10 +1,10 @@
 package com.epam.training.ticketservice.ui.shell.command;
 
 import com.epam.training.ticketservice.core.entity.User;
-import com.epam.training.ticketservice.core.model.MovieDTO;
-import com.epam.training.ticketservice.core.model.RoomDTO;
-import com.epam.training.ticketservice.core.model.ScreeningDTO;
-import com.epam.training.ticketservice.core.model.UserDTO;
+import com.epam.training.ticketservice.core.model.MovieDto;
+import com.epam.training.ticketservice.core.model.RoomDto;
+import com.epam.training.ticketservice.core.model.ScreeningDto;
+import com.epam.training.ticketservice.core.model.UserDto;
 import com.epam.training.ticketservice.core.service.MovieService;
 import com.epam.training.ticketservice.core.service.RoomService;
 import com.epam.training.ticketservice.core.service.ScreeningService;
@@ -38,12 +38,12 @@ public class ScreeningCommand {
     @ShellMethod(key = "create screening")
     public String createScreening(String movieTitle, String roomName, String formattedDateTime) {
 
-        ScreeningDTO screeningDTO = new ScreeningDTO(movieTitle, roomName, formattedDateTime);
+        ScreeningDto screeningDTO = new ScreeningDto(movieTitle, roomName, formattedDateTime);
 
-        MovieDTO movieDTO = movieService.findMovieByTitle(movieTitle)
+        MovieDto movieDTO = movieService.findMovieByTitle(movieTitle)
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-        RoomDTO roomDTO = roomService.findRoomByName(roomName)
+        RoomDto roomDTO = roomService.findRoomByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
         if(isOverlapping(screeningDTO, movieDTO, roomDTO, Optional.empty()))
@@ -61,10 +61,10 @@ public class ScreeningCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete screening")
     public String deleteScreening(String movieTitle, String roomName, String formattedDateTime) {
-        MovieDTO movieDTO = movieService.findMovieByTitle(movieTitle)
+        MovieDto movieDTO = movieService.findMovieByTitle(movieTitle)
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-        RoomDTO roomDTO = roomService.findRoomByName(roomName)
+        RoomDto roomDTO = roomService.findRoomByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
 
@@ -80,14 +80,14 @@ public class ScreeningCommand {
     @SuppressWarnings("unused")
     @ShellMethod(key = "list screenings")
     public String listScreenings() {
-         List<ScreeningDTO> screeningDTOList = screeningService.getScreeningList();
+         List<ScreeningDto> screeningDTOList = screeningService.getScreeningList();
 
         if(screeningDTOList.isEmpty())
             return "There are no screenings";
 
         return screeningDTOList.stream()
                 .map(screeningDTO -> {
-                    MovieDTO movieDTO = movieService.findMovieByTitle(screeningDTO.getMovieTitle())
+                    MovieDto movieDTO = movieService.findMovieByTitle(screeningDTO.getMovieTitle())
                             .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
                     return movieDTO.getTitle() + " (" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
@@ -99,14 +99,14 @@ public class ScreeningCommand {
 
     @SuppressWarnings("unused")
     private Availability isAdminInitiated() {
-        Optional<UserDTO> userDTO = userService.getCurrentUser();
+        Optional<UserDto> userDTO = userService.getCurrentUser();
 
         return userDTO.isPresent() && userDTO.get().getRole() == User.Role.ADMIN
                 ? Availability.available()
                 : Availability.unavailable("You are not an admin!");
     }
 
-    private boolean isOverlapping(ScreeningDTO screeningDTO, MovieDTO movieDTO, RoomDTO roomDTO, Optional<Integer> breakPeriod) {
+    private boolean isOverlapping(ScreeningDto screeningDTO, MovieDto movieDTO, RoomDto roomDTO, Optional<Integer> breakPeriod) {
         int breakPeriodAmount = breakPeriod.orElse(0);
 
         Date currentMovieDate = applicationDateFormatter.parseStringToDate(screeningDTO.getFormattedDateTime())
@@ -114,7 +114,7 @@ public class ScreeningCommand {
 
         Date currentMovieEndingDate = applicationDateHandler.addMinutesToDate(currentMovieDate, movieDTO.getRunTime() + breakPeriodAmount);
 
-        Optional<ScreeningDTO> existingScreeningDTO = screeningService.getScreeningList()
+        Optional<ScreeningDto> existingScreeningDTO = screeningService.getScreeningList()
                 .stream()
                 .filter(sDTO -> sDTO.getRoomName().equals(roomDTO.getName()))
                 .filter(sDTO -> {
@@ -122,10 +122,10 @@ public class ScreeningCommand {
                     Date checkedMovieDate = applicationDateFormatter.parseStringToDate(sDTO.getFormattedDateTime()).orElseThrow(
                             () -> new IllegalArgumentException("There is no screening with the given parameters!"));
 
-                    MovieDTO checkedMovieDTO = movieService.findMovieByTitle(sDTO.getMovieTitle())
+                    MovieDto checkedMovieDto = movieService.findMovieByTitle(sDTO.getMovieTitle())
                             .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-                    Date checkedMovieEnding = applicationDateHandler.addMinutesToDate(checkedMovieDate, checkedMovieDTO.getRunTime() + breakPeriodAmount);
+                    Date checkedMovieEnding = applicationDateHandler.addMinutesToDate(checkedMovieDate, checkedMovieDto.getRunTime() + breakPeriodAmount);
 
                     boolean beginsAfter = false;
                     boolean endsBefore = false;

@@ -1,14 +1,14 @@
 package com.epam.training.ticketservice.core.service;
 
-import com.epam.training.ticketservice.core.model.MovieDTO;
-import com.epam.training.ticketservice.core.model.RoomDTO;
-import com.epam.training.ticketservice.core.model.ScreeningDTO;
+import com.epam.training.ticketservice.core.model.MovieDto;
+import com.epam.training.ticketservice.core.model.RoomDto;
+import com.epam.training.ticketservice.core.model.ScreeningDto;
 
 import java.util.Date;
 import java.util.List;
 
 public interface ScreeningService {
-    void createScreening(ScreeningDTO screeningDTO);
-    void deleteScreening(MovieDTO movieDTO, RoomDTO roomDTO, Date date);
-    List<ScreeningDTO> getScreeningList();
+    void createScreening(ScreeningDto screeningDTO);
+    void deleteScreening(MovieDto movieDTO, RoomDto roomDTO, Date date);
+    List<ScreeningDto> getScreeningList();
 }

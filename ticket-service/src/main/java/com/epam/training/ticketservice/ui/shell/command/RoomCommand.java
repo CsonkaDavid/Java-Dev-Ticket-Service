@@ -1,8 +1,8 @@
 package com.epam.training.ticketservice.ui.shell.command;
 
 import com.epam.training.ticketservice.core.entity.User;
-import com.epam.training.ticketservice.core.model.RoomDTO;
-import com.epam.training.ticketservice.core.model.UserDTO;
+import com.epam.training.ticketservice.core.model.RoomDto;
+import com.epam.training.ticketservice.core.model.UserDto;
 import com.epam.training.ticketservice.core.service.RoomService;
 import com.epam.training.ticketservice.core.service.UserService;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,7 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "create room")
     public String createRoom(String name, Integer rows, Integer columns) {
-        RoomDTO roomDTO = new RoomDTO(name, rows, columns);
+        RoomDto roomDTO = new RoomDto(name, rows, columns);
         roomService.createRoom(roomDTO);
 
         return roomDTO + " created";
@@ -36,7 +36,7 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update room")
     public String updateRoom(String name, Integer rows, Integer columns) {
-        RoomDTO updateDTO = new RoomDTO(name, rows, columns);
+        RoomDto updateDTO = new RoomDto(name, rows, columns);
 
         roomService.updateRoom(name, updateDTO);
 
@@ -47,7 +47,7 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete room")
     public String deleteRoom(String name) {
-        RoomDTO roomDTO = roomService.getRoomList().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
+        RoomDto roomDTO = roomService.getRoomList().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
         roomService.deleteRoom(roomDTO);
@@ -58,12 +58,12 @@ public class RoomCommand {
     @SuppressWarnings("unused")
     @ShellMethod(key = "list rooms")
     public String listRooms() {
-        List<RoomDTO> roomDTOList = roomService.getRoomList();
+        List<RoomDto> roomDtoList = roomService.getRoomList();
 
-        if(roomDTOList.isEmpty())
+        if(roomDtoList.isEmpty())
             return "There are no rooms at the moment";
 
-        return roomDTOList.stream().map(roomDTO -> {
+        return roomDtoList.stream().map(roomDTO -> {
 
             Integer rows = roomDTO.getRows();
             Integer columns = roomDTO.getColumns();
@@ -75,7 +75,7 @@ public class RoomCommand {
 
     @SuppressWarnings("unused")
     private Availability isAdminInitiated() {
-        Optional<UserDTO> userDTO = userService.getCurrentUser();
+        Optional<UserDto> userDTO = userService.getCurrentUser();
 
         return userDTO.isPresent() && userDTO.get().getRole() == User.Role.ADMIN
                 ? Availability.available()

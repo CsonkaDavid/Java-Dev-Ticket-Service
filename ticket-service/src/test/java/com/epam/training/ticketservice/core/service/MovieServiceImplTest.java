@@ -1,7 +1,7 @@
 package com.epam.training.ticketservice.core.service;
 
 import com.epam.training.ticketservice.core.entity.Movie;
-import com.epam.training.ticketservice.core.model.MovieDTO;
+import com.epam.training.ticketservice.core.model.MovieDto;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.mock;
 class MovieServiceImplTest {
 
     private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76);
-    private final MovieDTO TEST_MOVIE_DTO = new MovieDTO("Avengers", "action", 76);
+    private final MovieDto TEST_MOVIE_DTO = new MovieDto("Avengers", "action", 76);
 
     private final MovieRepository movieRepository = mock(MovieRepository.class);
     private final MovieService testMovieService = new MovieServiceImpl(movieRepository);
@@ -36,10 +36,10 @@ class MovieServiceImplTest {
     void testGetMovieListShouldReturnListWithOneTestElement() {
         //Given
         Mockito.when(movieRepository.findAll()).thenReturn(List.of(TEST_MOVIE));
-        List<MovieDTO> expected = List.of(TEST_MOVIE_DTO);
+        List<MovieDto> expected = List.of(TEST_MOVIE_DTO);
 
         //When
-        List<MovieDTO> actual = testMovieService.getMovieList();
+        List<MovieDto> actual = testMovieService.getMovieList();
 
         //Then
         Assertions.assertEquals(expected, actual);
@@ -94,10 +94,10 @@ class MovieServiceImplTest {
     void testFindMovieByTitleShouldReturnOptionalEmptyWhenInputIsInvalid() {
         // Given
         Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.empty());
-        Optional<MovieDTO> expected = Optional.empty();
+        Optional<MovieDto> expected = Optional.empty();
 
         // When
-        Optional<MovieDTO> actual = testMovieService.findMovieByTitle(TEST_MOVIE.getTitle());
+        Optional<MovieDto> actual = testMovieService.findMovieByTitle(TEST_MOVIE.getTitle());
 
         // Then
         Assertions.assertEquals(expected, actual);
@@ -108,10 +108,10 @@ class MovieServiceImplTest {
     void testFindMovieByTitleShouldReturnMovieWhenInputIsValid() {
         // Given
         Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
-        Optional<MovieDTO> expected = Optional.of(TEST_MOVIE_DTO);
+        Optional<MovieDto> expected = Optional.of(TEST_MOVIE_DTO);
 
         // When
-        Optional<MovieDTO> actual = testMovieService.findMovieByTitle(TEST_MOVIE.getTitle());
+        Optional<MovieDto> actual = testMovieService.findMovieByTitle(TEST_MOVIE.getTitle());
 
         // Then
         Assertions.assertEquals(expected, actual);

@@ -1,12 +1,12 @@
 package com.epam.training.ticketservice.core.service;
 
-import com.epam.training.ticketservice.core.model.UserDTO;
+import com.epam.training.ticketservice.core.model.UserDto;
 
 import java.util.Optional;
 
 public interface UserService {
-    Optional<UserDTO> signIn(String username, String password);
-    Optional<UserDTO> signInPrivileged(String username, String password);
-    Optional<UserDTO> signOut();
-    Optional<UserDTO> getCurrentUser();
+    Optional<UserDto> signIn(String username, String password);
+    Optional<UserDto> signInPrivileged(String username, String password);
+    Optional<UserDto> signOut();
+    Optional<UserDto> getCurrentUser();
 }

@@ -2,8 +2,8 @@ package com.epam.training.ticketservice.ui.shell.command;
 
 import com.epam.training.ticketservice.core.entity.Movie;
 import com.epam.training.ticketservice.core.entity.User;
-import com.epam.training.ticketservice.core.model.MovieDTO;
-import com.epam.training.ticketservice.core.model.UserDTO;
+import com.epam.training.ticketservice.core.model.MovieDto;
+import com.epam.training.ticketservice.core.model.UserDto;
 import com.epam.training.ticketservice.core.service.MovieService;
 import com.epam.training.ticketservice.core.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -20,10 +20,10 @@ class MovieCommandTest {
     private final UserService userServiceMock = Mockito.mock(UserService.class);
 
     private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76);
-    private final MovieDTO TEST_MOVIE_DTO = new MovieDTO("Avengers", "action", 76);
+    private final MovieDto TEST_MOVIE_DTO = new MovieDto("Avengers", "action", 76);
 
-    private final UserDTO testUserDTO = new UserDTO("user", User.Role.USER);
-    private final UserDTO testAdminDTO = new UserDTO("admin", User.Role.ADMIN);
+    private final UserDto testUserDto = new UserDto("user", User.Role.USER);
+    private final UserDto testAdminDTO = new UserDto("admin", User.Role.ADMIN);
 
     private final MovieCommand testMovieCommandComponent = new MovieCommand(movieServiceMock, userServiceMock);
 
@@ -46,7 +46,7 @@ class MovieCommandTest {
     @Test
     void testUpdateMovieShouldUpdateTestMovieWhenMovieExists() {
         //Given
-        MovieDTO updateDTO = new MovieDTO(TEST_MOVIE_DTO.getTitle(), "valami", 99);
+        MovieDto updateDTO = new MovieDto(TEST_MOVIE_DTO.getTitle(), "valami", 99);
 
         String expectedOutput = updateDTO + " updated";
 
@@ -142,7 +142,7 @@ class MovieCommandTest {
     void testIsAdminInitiatedShouldReturnUnavailableWhenUserIsNotPrivileged() {
         //Given
         Mockito.when(userServiceMock.getCurrentUser())
-                .thenReturn(Optional.of(testUserDTO));
+                .thenReturn(Optional.of(testUserDto));
 
         boolean expected = Availability.unavailable("").isAvailable();
 

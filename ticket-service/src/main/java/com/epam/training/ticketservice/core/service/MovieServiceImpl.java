@@ -1,7 +1,7 @@
 package com.epam.training.ticketservice.core.service;
 
 import com.epam.training.ticketservice.core.entity.Movie;
-import com.epam.training.ticketservice.core.model.MovieDTO;
+import com.epam.training.ticketservice.core.model.MovieDto;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
 
     @Override
-    public void createMovie(MovieDTO movieDTO) {
+    public void createMovie(MovieDto movieDTO) {
         movieRepository.save(new Movie(
                 null,
                 movieDTO.getTitle(),
@@ -27,42 +27,42 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void updateMovie(String title, MovieDTO movieDTO) {
+    public void updateMovie(String title, MovieDto movieDto) {
         Movie movie = movieRepository.findByTitle(title)
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-        movieRepository.updateMovie(movie.getTitle(), movieDTO.getGenre(), movieDTO.getRunTime());
+        movieRepository.updateMovie(movie.getTitle(), movieDto.getGenre(), movieDto.getRunTime());
     }
 
     @Override
-    public void deleteMovie(MovieDTO movieDTO) {
-        Movie movie = movieRepository.findByTitle(movieDTO.getTitle())
+    public void deleteMovie(MovieDto movieDto) {
+        Movie movie = movieRepository.findByTitle(movieDto.getTitle())
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
         movieRepository.delete(movie);
     }
 
     @Override
-    public Optional<MovieDTO> findMovieByTitle(String title) {
-        return convertMovieToDTO(movieRepository.findByTitle(title));
+    public Optional<MovieDto> findMovieByTitle(String title) {
+        return convertMovieToDto(movieRepository.findByTitle(title));
     }
 
     @Override
-    public List<MovieDTO> getMovieList() {
+    public List<MovieDto> getMovieList() {
         return movieRepository.findAll().stream()
-                .map(this::convertMovieToDTO)
+                .map(this::convertMovieToDto)
                 .collect(Collectors.toList());
     }
 
-    private MovieDTO convertMovieToDTO(Movie movieDAO) {
-        return new MovieDTO(
+    private MovieDto convertMovieToDto(Movie movieDAO) {
+        return new MovieDto(
                 movieDAO.getTitle(),
                 movieDAO.getGenre(),
                 movieDAO.getRunTime()
         );
     }
 
-    private Optional<MovieDTO> convertMovieToDTO(Optional<Movie> movie) {
-        return movie.isEmpty() ? Optional.empty() : Optional.of(convertMovieToDTO(movie.get()));
+    private Optional<MovieDto> convertMovieToDto(Optional<Movie> movie) {
+        return movie.isEmpty() ? Optional.empty() : Optional.of(convertMovieToDto(movie.get()));
     }
 }
