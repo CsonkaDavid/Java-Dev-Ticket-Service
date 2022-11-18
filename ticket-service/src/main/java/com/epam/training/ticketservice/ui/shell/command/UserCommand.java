@@ -32,7 +32,7 @@ public class UserCommand {
         if (user.isEmpty()) {
             return "Login failed due to incorrect credentials";
         }
-        return "Signed in with privileged account " + user.get().getUsername();
+        return "Signed in with account " + user.get().getUsername();
     }
 
     @SuppressWarnings("unused")
@@ -48,7 +48,7 @@ public class UserCommand {
     @SuppressWarnings("unused")
     @ShellMethod(key = "describe account", value = "Provides information about the current user")
     public String describe() {
-        Optional<UserDTO> user = userService.signOut();
+        Optional<UserDTO> user = userService.getCurrentUser();
         if (user.isEmpty()) {
             return "You are not signed in";
         }
@@ -56,7 +56,7 @@ public class UserCommand {
         String userName = user.get().getUsername();
 
         if(user.get().getRole() == User.Role.ADMIN)
-            return "Signed in with privileged account " + userName;
+            return "Signed in with privileged account '" + userName + "'";
         else
             return "Signed in as " + userName;
     }
