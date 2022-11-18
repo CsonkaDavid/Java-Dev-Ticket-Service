@@ -17,12 +17,12 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
 
     @Override
-    public void createMovie(MovieDto movieDTO) {
+    public void createMovie(MovieDto movieDto) {
         movieRepository.save(new Movie(
                 null,
-                movieDTO.getTitle(),
-                movieDTO.getGenre(),
-                movieDTO.getRunTime()
+                movieDto.getTitle(),
+                movieDto.getGenre(),
+                movieDto.getRunTime()
         ));
     }
 
@@ -54,11 +54,11 @@ public class MovieServiceImpl implements MovieService {
                 .collect(Collectors.toList());
     }
 
-    private MovieDto convertMovieToDto(Movie movieDAO) {
+    private MovieDto convertMovieToDto(Movie movie) {
         return new MovieDto(
-                movieDAO.getTitle(),
-                movieDAO.getGenre(),
-                movieDAO.getRunTime()
+                movie.getTitle(),
+                movie.getGenre(),
+                movie.getRunTime()
         );
     }
 

@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoomService {
-    void createRoom(RoomDto roomDTO);
-    void updateRoom(String name, RoomDto roomDTO);
-    void deleteRoom(RoomDto roomDTO);
+    void createRoom(RoomDto roomDto);
+
+    void updateRoom(String name, RoomDto roomDto);
+
+    void deleteRoom(RoomDto roomDto);
+
     Optional<RoomDto> findRoomByName(String name);
+
     List<RoomDto> getRoomList();
 }

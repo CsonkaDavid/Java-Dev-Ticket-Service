@@ -26,53 +26,56 @@ public class MovieCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "create movie")
     public String createMovie(String title, String genre, Integer runTime) {
-        MovieDto movieDTO = new MovieDto(title, genre, runTime);
-        movieService.createMovie(movieDTO);
+        MovieDto movieDto = new MovieDto(title, genre, runTime);
+        movieService.createMovie(movieDto);
 
-        return movieDTO + " created";
+        return movieDto + " created";
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update movie")
     public String updateMovie(String title, String genre, Integer runTime) {
-        MovieDto movieDTO = new MovieDto(title, genre, runTime);
+        MovieDto movieDto = new MovieDto(title, genre, runTime);
 
-        movieService.updateMovie(title, movieDTO);
+        movieService.updateMovie(title, movieDto);
 
-        return movieDTO + " updated";
+        return movieDto + " updated";
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete movie")
     public String deleteMovie(String title) {
-        MovieDto movieDTO = movieService.findMovieByTitle(title)
+        MovieDto movieDto = movieService.findMovieByTitle(title)
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-        movieService.deleteMovie(movieDTO);
+        movieService.deleteMovie(movieDto);
 
-        return movieDTO +  " deleted";
+        return movieDto +  " deleted";
     }
 
     @SuppressWarnings("unused")
     @ShellMethod(key = "list movies")
     public String listMovies() {
-        List<MovieDto> movieDAOList = movieService.getMovieList();
+        List<MovieDto> movieDtoList = movieService.getMovieList();
 
-        if(movieDAOList.isEmpty())
+        if (movieDtoList.isEmpty()) {
             return "There are no movies at the moment";
+        }
 
-        return movieDAOList.stream().map(
-                movieDTO -> movieDTO.getTitle() + " (" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes)")
+        return movieDtoList
+                .stream()
+                .map(m -> m.getTitle() + " (" + m.getGenre()
+                        + ", " + m.getRunTime() + " minutes)")
                 .collect(Collectors.joining("\n"));
     }
 
     @SuppressWarnings("unused")
     public Availability isAdminInitiated() {
-        Optional<UserDto> userDTO = userService.getCurrentUser();
+        Optional<UserDto> userDto = userService.getCurrentUser();
 
-        return userDTO.isPresent() && userDTO.get().getRole() == User.Role.ADMIN
+        return userDto.isPresent() && userDto.get().getRole() == User.Role.ADMIN
                 ? Availability.available()
                 : Availability.unavailable("You are not an admin!");
     }

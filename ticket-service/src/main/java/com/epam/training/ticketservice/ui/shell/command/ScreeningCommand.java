@@ -30,68 +30,72 @@ public class ScreeningCommand {
     private final MovieService movieService;
     private final RoomService roomService;
     private final ScreeningService screeningService;
-    private final ApplicationDateFormatter applicationDateFormatter;
-    private final ApplicationDateHandler applicationDateHandler;
+    private final ApplicationDateFormatter dateFormatter;
+    private final ApplicationDateHandler dateHandler;
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "create screening")
     public String createScreening(String movieTitle, String roomName, String formattedDateTime) {
 
-        ScreeningDto screeningDTO = new ScreeningDto(movieTitle, roomName, formattedDateTime);
+        ScreeningDto screeningDto = new ScreeningDto(movieTitle, roomName, formattedDateTime);
 
-        MovieDto movieDTO = movieService.findMovieByTitle(movieTitle)
+        MovieDto movieDto = movieService.findMovieByTitle(movieTitle)
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-        RoomDto roomDTO = roomService.findRoomByName(roomName)
+        RoomDto roomDto = roomService.findRoomByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        if(isOverlapping(screeningDTO, movieDTO, roomDTO, Optional.empty()))
+        if (isOverlapping(screeningDto, movieDto, roomDto, Optional.empty())) {
             return "There is an overlapping screening";
+        }
 
-        if(isOverlapping(screeningDTO, movieDTO, roomDTO, Optional.of(10)))
+        if (isOverlapping(screeningDto, movieDto, roomDto, Optional.of(10))) {
             return "This would start in the break period after another screening in this room";
+        }
 
-        screeningService.createScreening(screeningDTO);
+        screeningService.createScreening(screeningDto);
 
-        return screeningDTO + " created";
+        return screeningDto + " created";
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete screening")
     public String deleteScreening(String movieTitle, String roomName, String formattedDateTime) {
-        MovieDto movieDTO = movieService.findMovieByTitle(movieTitle)
+        MovieDto movieDto = movieService.findMovieByTitle(movieTitle)
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-        RoomDto roomDTO = roomService.findRoomByName(roomName)
+        RoomDto roomDto = roomService.findRoomByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
 
-        Date date = applicationDateFormatter.parseStringToDate(formattedDateTime)
-                .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + applicationDateFormatter.getPattern()));
+        Date date = dateFormatter.parseStringToDate(formattedDateTime)
+                .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + dateFormatter.getPattern()));
 
-        screeningService.deleteScreening(movieDTO, roomDTO, date);
+        screeningService.deleteScreening(movieDto, roomDto, date);
 
-        return movieDTO.getTitle() + " (" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
-                roomDTO.getName()+ ", at " + date.toString() +  " screening deleted";
+        return movieDto.getTitle() + " (" + movieDto.getGenre() + ", " + movieDto.getRunTime()
+                + " minutes), screened in room " + roomDto.getName() + ", at " + date.toString()
+                +  " screening deleted";
     }
 
     @SuppressWarnings("unused")
     @ShellMethod(key = "list screenings")
     public String listScreenings() {
-         List<ScreeningDto> screeningDTOList = screeningService.getScreeningList();
+        List<ScreeningDto> screeningDtoList = screeningService.getScreeningList();
 
-        if(screeningDTOList.isEmpty())
+        if (screeningDtoList.isEmpty()) {
             return "There are no screenings";
+        }
 
-        return screeningDTOList.stream()
-                .map(screeningDTO -> {
-                    MovieDto movieDTO = movieService.findMovieByTitle(screeningDTO.getMovieTitle())
+        return screeningDtoList.stream()
+                .map(s -> {
+                    MovieDto movieDto = movieService.findMovieByTitle(s.getMovieTitle())
                             .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-                    return movieDTO.getTitle() + " (" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
-                            screeningDTO.getRoomName() + ", at " + screeningDTO.getFormattedDateTime();
+                    return movieDto.getTitle() + " (" + movieDto.getGenre() + ", " + movieDto.getRunTime()
+                            + " minutes), screened in room " + s.getRoomName() + ", at " + s.getFormattedDateTime();
 
                 })
                 .collect(Collectors.joining("\n"));
@@ -99,47 +103,64 @@ public class ScreeningCommand {
 
     @SuppressWarnings("unused")
     private Availability isAdminInitiated() {
-        Optional<UserDto> userDTO = userService.getCurrentUser();
+        Optional<UserDto> userDto = userService.getCurrentUser();
 
-        return userDTO.isPresent() && userDTO.get().getRole() == User.Role.ADMIN
+        return userDto.isPresent() && userDto.get().getRole() == User.Role.ADMIN
                 ? Availability.available()
                 : Availability.unavailable("You are not an admin!");
     }
 
-    private boolean isOverlapping(ScreeningDto screeningDTO, MovieDto movieDTO, RoomDto roomDTO, Optional<Integer> breakPeriod) {
+    private boolean isOverlapping(
+            ScreeningDto screeningDto,
+            MovieDto movieDto,
+            RoomDto roomDto,
+            Optional<Integer> breakPeriod) {
+
         int breakPeriodAmount = breakPeriod.orElse(0);
 
-        Date currentMovieDate = applicationDateFormatter.parseStringToDate(screeningDTO.getFormattedDateTime())
-                .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + applicationDateFormatter.getPattern()));
+        Date currentMovieDate = dateFormatter.parseStringToDate(screeningDto.getFormattedDateTime())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Can't parse date to " + dateFormatter.getPattern()));
 
-        Date currentMovieEndingDate = applicationDateHandler.addMinutesToDate(currentMovieDate, movieDTO.getRunTime() + breakPeriodAmount);
 
-        Optional<ScreeningDto> existingScreeningDTO = screeningService.getScreeningList()
+        Date currentMovieEndingDate = dateHandler
+                .addMinutesToDate(currentMovieDate, movieDto.getRunTime() + breakPeriodAmount);
+
+        Optional<ScreeningDto> overlappingScreeningDto = screeningService.getScreeningList()
                 .stream()
-                .filter(sDTO -> sDTO.getRoomName().equals(roomDTO.getName()))
-                .filter(sDTO -> {
+                .filter(s -> s.getRoomName().equals(roomDto.getName()))
+                .filter(s -> {
 
-                    Date checkedMovieDate = applicationDateFormatter.parseStringToDate(sDTO.getFormattedDateTime()).orElseThrow(
-                            () -> new IllegalArgumentException("There is no screening with the given parameters!"));
+                    Date checkedMovieDate = dateFormatter.parseStringToDate(s.getFormattedDateTime())
+                            .orElseThrow(() ->
+                                    new IllegalArgumentException("There is no screening with the given parameters!"));
 
-                    MovieDto checkedMovieDto = movieService.findMovieByTitle(sDTO.getMovieTitle())
-                            .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
+                    MovieDto checkedMovieDto = movieService.findMovieByTitle(s.getMovieTitle())
+                            .orElseThrow(() ->
+                                    new IllegalArgumentException("There is no movie with the given title!"));
 
-                    Date checkedMovieEnding = applicationDateHandler.addMinutesToDate(checkedMovieDate, checkedMovieDto.getRunTime() + breakPeriodAmount);
+                    Date checkedMovieEnding = dateHandler
+                            .addMinutesToDate(checkedMovieDate, checkedMovieDto.getRunTime() + breakPeriodAmount);
 
                     boolean beginsAfter = false;
                     boolean endsBefore = false;
 
-                    if((currentMovieDate.compareTo(checkedMovieDate) >= 0) && (currentMovieDate.compareTo(checkedMovieEnding) >= 0))
-                        beginsAfter = true;
+                    if ((currentMovieDate.compareTo(checkedMovieDate) >= 0)
+                            && (currentMovieDate.compareTo(checkedMovieEnding) >= 0)) {
 
-                    if((currentMovieDate.compareTo(checkedMovieDate) <= 0) && (currentMovieEndingDate.compareTo(checkedMovieDate) <= 0))
+                        beginsAfter = true;
+                    }
+
+                    if ((currentMovieDate.compareTo(checkedMovieDate) <= 0)
+                            && (currentMovieEndingDate.compareTo(checkedMovieDate) <= 0)) {
+
                         endsBefore = true;
+                    }
 
                     return !(beginsAfter || endsBefore);
                 })
                 .findFirst();
 
-        return existingScreeningDTO.isPresent();
+        return overlappingScreeningDto.isPresent();
     }
 }

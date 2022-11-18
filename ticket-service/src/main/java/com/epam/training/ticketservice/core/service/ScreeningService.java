@@ -8,7 +8,9 @@ import java.util.Date;
 import java.util.List;
 
 public interface ScreeningService {
-    void createScreening(ScreeningDto screeningDTO);
-    void deleteScreening(MovieDto movieDTO, RoomDto roomDTO, Date date);
+    void createScreening(ScreeningDto screeningDto);
+
+    void deleteScreening(MovieDto movieDto, RoomDto roomDto, Date date);
+
     List<ScreeningDto> getScreeningList();
 }

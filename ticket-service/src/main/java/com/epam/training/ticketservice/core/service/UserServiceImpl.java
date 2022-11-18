@@ -19,7 +19,9 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDto> signIn(String username, String password) {
         Optional<User> user = userRepository.findByUsernameAndPassword(username, password);
 
-        if(user.isEmpty()) return Optional.empty();
+        if (user.isEmpty()) {
+            return Optional.empty();
+        }
 
         currentUser = new UserDto(user.get().getUsername(), user.get().getRole());
 
@@ -30,8 +32,13 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDto> signInPrivileged(String username, String password) {
         Optional<User> user = userRepository.findByUsernameAndPassword(username, password);
 
-        if(user.isEmpty()) return Optional.empty();
-        if(!user.get().getRole().equals(User.Role.ADMIN)) return Optional.empty();
+        if (user.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (!user.get().getRole().equals(User.Role.ADMIN)) {
+            return Optional.empty();
+        }
 
         currentUser = new UserDto(user.get().getUsername(), user.get().getRole());
 
@@ -41,7 +48,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserDto> signOut() {
         Optional<UserDto> previouslyLoggedInUser = getCurrentUser();
+
         currentUser = null;
+
         return previouslyLoggedInUser;
     }
 

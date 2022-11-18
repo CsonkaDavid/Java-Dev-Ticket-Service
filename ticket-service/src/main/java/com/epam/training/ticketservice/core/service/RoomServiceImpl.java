@@ -17,21 +17,21 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
 
     @Override
-    public void createRoom(RoomDto roomDTO) {
-        roomRepository.save(new Room(null, roomDTO.getName(), roomDTO.getRows(), roomDTO.getColumns()));
+    public void createRoom(RoomDto roomDto) {
+        roomRepository.save(new Room(null, roomDto.getName(), roomDto.getRows(), roomDto.getColumns()));
     }
 
     @Override
-    public void updateRoom(String name, RoomDto roomDTO) {
+    public void updateRoom(String name, RoomDto roomDto) {
         Room room = roomRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        roomRepository.updateMovie(room.getName(), roomDTO.getRows(), roomDTO.getColumns());
+        roomRepository.updateMovie(room.getName(), roomDto.getRows(), roomDto.getColumns());
     }
 
     @Override
-    public void deleteRoom(RoomDto roomDTO) {
-        Room room = roomRepository.findByName(roomDTO.getName())
+    public void deleteRoom(RoomDto roomDto) {
+        Room room = roomRepository.findByName(roomDto.getName())
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
         roomRepository.delete(room);
@@ -39,21 +39,21 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Optional<RoomDto> findRoomByName(String name) {
-        return convertRoomToDTO(roomRepository.findByName(name));
+        return convertRoomToDto(roomRepository.findByName(name));
     }
 
     @Override
     public List<RoomDto> getRoomList() {
         return roomRepository.findAll().stream()
-                .map(this::convertRoomToDTO)
+                .map(this::convertRoomToDto)
                 .collect(Collectors.toList());
     }
 
-    private RoomDto convertRoomToDTO(Room room) {
+    private RoomDto convertRoomToDto(Room room) {
         return new RoomDto(room.getName(), room.getRows(), room.getColumns());
     }
 
-    private Optional<RoomDto> convertRoomToDTO(Optional<Room> room) {
-        return room.isEmpty() ? Optional.empty() : Optional.of(convertRoomToDTO(room.get()));
+    private Optional<RoomDto> convertRoomToDto(Optional<Room> room) {
+        return room.isEmpty() ? Optional.empty() : Optional.of(convertRoomToDto(room.get()));
     }
 }

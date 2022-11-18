@@ -6,7 +6,10 @@ import java.util.Optional;
 
 public interface UserService {
     Optional<UserDto> signIn(String username, String password);
+
     Optional<UserDto> signInPrivileged(String username, String password);
+
     Optional<UserDto> signOut();
+
     Optional<UserDto> getCurrentUser();
 }

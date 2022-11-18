@@ -26,19 +26,19 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "create room")
     public String createRoom(String name, Integer rows, Integer columns) {
-        RoomDto roomDTO = new RoomDto(name, rows, columns);
-        roomService.createRoom(roomDTO);
+        RoomDto roomDto = new RoomDto(name, rows, columns);
+        roomService.createRoom(roomDto);
 
-        return roomDTO + " created";
+        return roomDto + " created";
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update room")
     public String updateRoom(String name, Integer rows, Integer columns) {
-        RoomDto updateDTO = new RoomDto(name, rows, columns);
+        RoomDto updateDto = new RoomDto(name, rows, columns);
 
-        roomService.updateRoom(name, updateDTO);
+        roomService.updateRoom(name, updateDto);
 
         return name + " updated";
     }
@@ -47,12 +47,15 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete room")
     public String deleteRoom(String name) {
-        RoomDto roomDTO = roomService.getRoomList().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
+        RoomDto roomDto = roomService.getRoomList()
+                .stream()
+                .filter(r -> r.getName().equals(name))
+                .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        roomService.deleteRoom(roomDTO);
+        roomService.deleteRoom(roomDto);
 
-        return roomDTO +  " deleted";
+        return roomDto +  " deleted";
     }
 
     @SuppressWarnings("unused")
@@ -60,24 +63,26 @@ public class RoomCommand {
     public String listRooms() {
         List<RoomDto> roomDtoList = roomService.getRoomList();
 
-        if(roomDtoList.isEmpty())
+        if (roomDtoList.isEmpty()) {
             return "There are no rooms at the moment";
+        }
 
-        return roomDtoList.stream().map(roomDTO -> {
+        return roomDtoList.stream().map(roomDto -> {
 
-            Integer rows = roomDTO.getRows();
-            Integer columns = roomDTO.getColumns();
+            Integer rows = roomDto.getRows();
+            Integer columns = roomDto.getColumns();
 
-            return "Room " + roomDTO.getName() + " with " + rows * columns + " seats, " + rows + " rows and " + columns + " columns";
+            return "Room " + roomDto.getName() + " with " + rows * columns
+                    + " seats, " + rows + " rows and " + columns + " columns";
 
         }).collect(Collectors.joining("\n"));
     }
 
     @SuppressWarnings("unused")
     private Availability isAdminInitiated() {
-        Optional<UserDto> userDTO = userService.getCurrentUser();
+        Optional<UserDto> userDto = userService.getCurrentUser();
 
-        return userDTO.isPresent() && userDTO.get().getRole() == User.Role.ADMIN
+        return userDto.isPresent() && userDto.get().getRole() == User.Role.ADMIN
                 ? Availability.available()
                 : Availability.unavailable("You are not an admin!");
     }

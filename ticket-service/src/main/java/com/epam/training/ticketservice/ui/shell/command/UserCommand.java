@@ -55,9 +55,10 @@ public class UserCommand {
 
         String userName = user.get().getUsername();
 
-        if(user.get().getRole() == User.Role.ADMIN)
+        if (user.get().getRole() == User.Role.ADMIN) {
             return "Signed in with privileged account '" + userName + "'";
-        else
-            return "Signed in as " + userName;
+        }
+
+        return "Signed in as " + userName;
     }
 }

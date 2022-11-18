@@ -27,26 +27,30 @@ public class ScreeningServiceImpl implements ScreeningService {
     private final ApplicationDateFormatter applicationDateFormatter;
 
     @Override
-    public void createScreening(ScreeningDto screeningDTO) {
+    public void createScreening(ScreeningDto screeningDto) {
 
-        Date date = applicationDateFormatter.parseStringToDate(screeningDTO.getFormattedDateTime())
-                .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + applicationDateFormatter.getPattern()));
+        Date date = applicationDateFormatter.parseStringToDate(screeningDto.getFormattedDateTime())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Can't parse date to "
+                                + applicationDateFormatter.getPattern()));
 
-        Movie movie = movieRepository.findByTitle(screeningDTO.getMovieTitle())
-                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
+        Movie movie = movieRepository.findByTitle(screeningDto.getMovieTitle())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("There is no movie with the given name!"));
 
-        Room room = roomRepository.findByName(screeningDTO.getRoomName())
-                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
+        Room room = roomRepository.findByName(screeningDto.getRoomName())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("There is no room with the given name!"));
 
         screeningRepository.save(new Screening(null, movie, room, date));
     }
 
     @Override
-    public void deleteScreening(MovieDto movieDTO, RoomDto roomDTO, Date date) {
-        Movie movie = movieRepository.findByTitle(movieDTO.getTitle())
+    public void deleteScreening(MovieDto movieDto, RoomDto roomDto, Date date) {
+        Movie movie = movieRepository.findByTitle(movieDto.getTitle())
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
 
-        Room room = roomRepository.findByName(roomDTO.getName())
+        Room room = roomRepository.findByName(roomDto.getName())
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
         Screening screening = screeningRepository.findByMovieAndRoomAndDate(movie, room, date)
@@ -58,10 +62,10 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     public List<ScreeningDto> getScreeningList() {
         return screeningRepository.findAll().stream()
-                .map(this::convertScreeningToDTO).collect(Collectors.toList());
+                .map(this::convertScreeningToDto).collect(Collectors.toList());
     }
 
-    private ScreeningDto convertScreeningToDTO(Screening screening) {
+    private ScreeningDto convertScreeningToDto(Screening screening) {
 
         String formattedDate = applicationDateFormatter.convertDateToString(screening.getDate());
 
