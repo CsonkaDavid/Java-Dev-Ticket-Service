@@ -46,8 +46,11 @@ public class ScreeningCommand {
         RoomDTO roomDTO = roomService.findRoomByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        if(isOverlapping(screeningDTO, movieDTO, roomDTO))
+        if(isOverlapping(screeningDTO, movieDTO, roomDTO, Optional.empty()))
             return "There is an overlapping screening";
+
+        if(isOverlapping(screeningDTO, movieDTO, roomDTO, Optional.of(10)))
+            return "This would start in the break period after another screening in this room";
 
         screeningService.createScreening(screeningDTO);
 
@@ -70,7 +73,7 @@ public class ScreeningCommand {
 
         screeningService.deleteScreening(movieDTO, roomDTO, date);
 
-        return movieDTO.getTitle() + "(" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
+        return movieDTO.getTitle() + " (" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
                 roomDTO.getName()+ ", at " + date.toString() +  " screening deleted";
     }
 
@@ -96,7 +99,7 @@ public class ScreeningCommand {
                     MovieDTO movieDTO = movieService.findMovieByTitle(screeningDTO.getMovieTitle())
                             .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-                    return movieDTO.getTitle() + "(" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
+                    return movieDTO.getTitle() + " (" + movieDTO.getGenre() + ", " + movieDTO.getRunTime() + " minutes), screened in room " +
                             screeningDTO.getRoomName() + ", at " + screeningDTO.getFormattedDateTime();
 
                 })
@@ -113,11 +116,13 @@ public class ScreeningCommand {
                 : Availability.unavailable("You are not an admin!");
     }
 
-    private boolean isOverlapping(ScreeningDTO screeningDTO, MovieDTO movieDTO, RoomDTO roomDTO) {
+    private boolean isOverlapping(ScreeningDTO screeningDTO, MovieDTO movieDTO, RoomDTO roomDTO, Optional<Integer> breakPeriod) {
+        int breakPeriodAmount = breakPeriod.orElse(0);
+
         Date currentMovieDate = applicationDateFormatter.parseStringToDate(screeningDTO.getFormattedDateTime())
                 .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + applicationDateFormatter.getPattern()));
 
-        Date currentMovieEndingDate = applicationDateHandler.addMinutesToDate(currentMovieDate, movieDTO.getRunTime());
+        Date currentMovieEndingDate = applicationDateHandler.addMinutesToDate(currentMovieDate, movieDTO.getRunTime() + breakPeriodAmount);
 
         Optional<ScreeningDTO> existingScreeningDTO = screeningService.getScreeningList()
                 .stream()
@@ -130,7 +135,7 @@ public class ScreeningCommand {
                     MovieDTO checkedMovieDTO = movieService.findMovieByTitle(sDTO.getMovieTitle())
                             .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
 
-                    Date checkedMovieEnding = applicationDateHandler.addMinutesToDate(checkedMovieDate, checkedMovieDTO.getRunTime());
+                    Date checkedMovieEnding = applicationDateHandler.addMinutesToDate(checkedMovieDate, checkedMovieDTO.getRunTime() + breakPeriodAmount);
 
                     boolean beginsAfter = false;
                     boolean endsBefore = false;
