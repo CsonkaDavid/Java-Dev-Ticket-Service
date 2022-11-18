@@ -39,7 +39,9 @@ public class RoomCommand {
         RoomDTO roomDTO = roomService.getRoomList().stream().filter(rDTO -> rDTO.getName().equals(name)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        roomService.updateRoom(name, roomDTO);
+        RoomDTO updateDTO = new RoomDTO(roomDTO.getName(), rows, columns);
+
+        roomService.updateRoom(roomDTO.getName(), updateDTO);
 
         return roomDTO + " updated";
     }
