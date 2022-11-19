@@ -2,6 +2,7 @@ package com.epam.training.ticketservice.ui.shell.command;
 
 import com.epam.training.ticketservice.core.entity.User;
 import com.epam.training.ticketservice.core.model.UserDto;
+import com.epam.training.ticketservice.core.service.BookingService;
 import com.epam.training.ticketservice.core.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,12 +13,13 @@ import java.util.Optional;
 class UserCommandTest {
 
     private final UserService userServiceMock = Mockito.mock(UserService.class);
+    private final BookingService bookingServiceMock = Mockito.mock(BookingService.class);
     private final UserDto testUserDto = new UserDto("user", User.Role.USER);
     private final UserDto testAdminDTO = new UserDto("admin", User.Role.ADMIN);
     private final User testUser = new User(null, testUserDto.getUsername(), "password", testUserDto.getRole());
     private final User testAdmin = new User(null, testAdminDTO.getUsername(), "password", testAdminDTO.getRole());
 
-    private final UserCommand testUserCommandComponent = new UserCommand(userServiceMock);
+    private final UserCommand testUserCommandComponent = new UserCommand(userServiceMock, bookingServiceMock);
 
     @Test
     void testSignInCommandShouldSignUserInWhenUserExists() {
@@ -156,7 +158,8 @@ class UserCommandTest {
         Mockito.when(userServiceMock.getCurrentUser())
                 .thenReturn(Optional.of(testUserDto));
 
-        String expectedOutput = "Signed in as " + testUser.getUsername();
+        String expectedOutput = "Signed in as " + testUser.getUsername()
+                + "\nYou have not booked any tickets yet";
 
         //When
         String actualOutput = testUserCommandComponent.describe();
