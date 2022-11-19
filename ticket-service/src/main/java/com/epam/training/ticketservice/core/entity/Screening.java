@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.ManyToOne;
+
 import java.util.Date;
 
 @Entity
