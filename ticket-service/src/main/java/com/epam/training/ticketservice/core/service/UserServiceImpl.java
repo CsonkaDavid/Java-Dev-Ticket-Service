@@ -58,4 +58,17 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDto> getCurrentUser() {
         return Optional.ofNullable(currentUser);
     }
+
+    @Override
+    public void signUp(String username, String password) {
+        User user = new User(null, username, password, User.Role.USER);
+
+        Optional<User> existingUser = userRepository.findByUsername(username);
+
+        if (existingUser.isPresent()) {
+            throw new IllegalArgumentException("Username already exists!");
+        }
+
+        userRepository.save(user);
+    }
 }
