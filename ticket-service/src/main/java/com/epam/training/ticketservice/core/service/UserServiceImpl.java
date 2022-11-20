@@ -66,7 +66,9 @@ public class UserServiceImpl implements UserService {
         Optional<User> existingUser = userRepository.findByUsername(username);
 
         if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("Username already exists!");
+            throw new IllegalArgumentException("Username \""
+                    + username
+                    + "\" is already taken!");
         }
 
         userRepository.save(user);
