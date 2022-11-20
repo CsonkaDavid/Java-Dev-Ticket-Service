@@ -20,8 +20,9 @@ public class BookingSeat {
     @GeneratedValue
     private Integer id;
 
-    private Integer row;
+    @Column(name = "seat_row")
+    private Integer seatRow;
 
-    @Column(name = "col")
-    private Integer column;
+    @Column(name = "seat_column")
+    private Integer seatColumn;
 }
