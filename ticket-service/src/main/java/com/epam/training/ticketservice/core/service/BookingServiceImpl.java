@@ -51,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
                 .map(this::convertBookingToDto)
                 .collect(Collectors.toList());
 
-        return Optional.of(convertBookingDtoListToString(bookingDtoList));
+        return Optional.of(convertBookingDtoListToReadable(bookingDtoList));
     }
 
     @Override
@@ -76,7 +76,10 @@ public class BookingServiceImpl implements BookingService {
         List<String> splitStringList = Arrays.stream(seats.split(" "))
                 .collect(Collectors.toList());
 
-        List<BookingSeat> bookingSeatList = convertSeatStringListToBookingSeatList(splitStringList);
+        List<BookingSeat> bookingSeatList = splitStringList.stream()
+                .map(this::convertSeatStringToBookingSeat)
+                .collect(Collectors.toList());
+
         int price = calculateBookingPrice(bookingSeatList);
 
         Booking booking = new Booking(null, user, screening, bookingSeatList, price);
@@ -85,18 +88,18 @@ public class BookingServiceImpl implements BookingService {
         Optional<BookingSeat> takenSeat = checkForTakenSeat(bookingSeatList, booking);
 
         if (missingSeat.isPresent()) {
-            return "Seat (" + missingSeat.get().getRow() + " ," + missingSeat.get().getColumn()
+            return "Seat (" + missingSeat.get().getSeatRow() + "," + missingSeat.get().getSeatColumn()
                     + ") does not exist in this room";
         }
 
         if (takenSeat.isPresent()) {
-            return "Seat (" + takenSeat.get().getRow() + " ," + takenSeat.get().getColumn()
+            return "Seat (" + takenSeat.get().getSeatRow() + "," + takenSeat.get().getSeatColumn()
                     + ") is already taken";
         }
 
         bookingRepository.save(booking);
 
-        String seatListString = convertSeatStringListToString(splitStringList);
+        String seatListString = convertSeatStringListToReadable(splitStringList);
 
         return "Seats booked: " + seatListString + "; the price for this booking is " + price + " HUF";
     }
@@ -105,7 +108,7 @@ public class BookingServiceImpl implements BookingService {
         return 1500 * seatList.size();
     }
 
-    private String convertSeatStringListToString(List<String> splitStringList) {
+    private String convertSeatStringListToReadable(List<String> splitStringList) {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (int i = 0; i < splitStringList.size() - 1; i++) {
@@ -114,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
             stringBuilder
                     .append("(")
                     .append(seat[0])
-                    .append(", ")
+                    .append(",")
                     .append(seat[1])
                     .append("), ");
         }
@@ -126,7 +129,7 @@ public class BookingServiceImpl implements BookingService {
         stringBuilder
                 .append("(")
                 .append(lastSeat[0])
-                .append(", ")
+                .append(",")
                 .append(lastSeat[1])
                 .append(")");
 
@@ -138,8 +141,8 @@ public class BookingServiceImpl implements BookingService {
         Room bookingRoom = booking.getScreening().getRoom();
 
         for (BookingSeat currentSeat : bookingSeatList) {
-            if ((currentSeat.getRow() > bookingRoom.getRows() || currentSeat.getRow() <= 0)
-                    || (currentSeat.getColumn() > bookingRoom.getColumns() || currentSeat.getColumn() <= 0)) {
+            if ((currentSeat.getSeatRow() > bookingRoom.getRows() || currentSeat.getSeatRow() <= 0)
+                    || (currentSeat.getSeatColumn() > bookingRoom.getColumns() || currentSeat.getSeatColumn() <= 0)) {
 
                 toReturn = Optional.of(currentSeat);
                 break;
@@ -161,8 +164,8 @@ public class BookingServiceImpl implements BookingService {
 
                 for (BookingSeat currentTakenSeat : currentTakenSeats) {
 
-                    if (Objects.equals(currentTakenSeat.getRow(), currentSeat.getRow())
-                            && Objects.equals(currentTakenSeat.getColumn(), currentSeat.getColumn())) {
+                    if (Objects.equals(currentTakenSeat.getSeatRow(), currentSeat.getSeatRow())
+                            && Objects.equals(currentTakenSeat.getSeatColumn(), currentSeat.getSeatColumn())) {
 
                         toReturn = Optional.of(currentSeat);
                         break;
@@ -174,21 +177,16 @@ public class BookingServiceImpl implements BookingService {
         return toReturn;
     }
 
-    private List<BookingSeat> convertSeatStringListToBookingSeatList(List<String> seats) {
-        return seats.stream()
-                .map(b -> {
-                    String[] seat = b.split(",");
+    private BookingSeat convertSeatStringToBookingSeat(String string) {
+        String[] seat = string.split(",");
 
-                    Integer row = Integer.valueOf(seat[0]);
-                    Integer column = Integer.valueOf(seat[1]);
+        Integer row = Integer.valueOf(seat[0]);
+        Integer column = Integer.valueOf(seat[1]);
 
-                    return new BookingSeat(null, row, column);
-
-                })
-                .collect(Collectors.toList());
+        return new BookingSeat(null, row, column);
     }
 
-    private String convertBookingDtoListToString(List<BookingDto> bookingDtoList) {
+    private String convertBookingDtoListToReadable(List<BookingDto> bookingDtoList) {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (int i = 0; i < bookingDtoList.size() - 1; i++) {
@@ -228,15 +226,14 @@ public class BookingServiceImpl implements BookingService {
                 .append(lastBookingDto.getFormattedDateTime())
                 .append(" for ")
                 .append(lastBookingDto.getPrice())
-                .append(" HUF")
-                .append("\n");
+                .append(" HUF");
 
         return stringBuilder.toString();
     }
 
     private List<String> convertBookingSeatListToSeatStringList(List<BookingSeat> seats) {
         return seats.stream()
-                .map(b -> b.getRow() + "," + b.getColumn())
+                .map(b -> b.getSeatRow() + "," + b.getSeatColumn())
                 .collect(Collectors.toList());
     }
 
@@ -245,9 +242,7 @@ public class BookingServiceImpl implements BookingService {
         String movie = screening.getMovie().getTitle();
         String room = screening.getRoom().getName();
         String date = applicationDateFormatter.convertDateToString(screening.getDate());
-        String seats = convertSeatStringListToString(
-                convertBookingSeatListToSeatStringList(
-                        booking.getSeats()));
+        String seats = convertSeatStringListToReadable(convertBookingSeatListToSeatStringList(booking.getSeats()));
 
         return new BookingDto(movie, room, date, seats, booking.getPrice());
     }
