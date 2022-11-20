@@ -5,15 +5,15 @@ import com.epam.training.ticketservice.core.model.UserDto;
 import com.epam.training.ticketservice.core.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 
 class UserServiceImplTest {
 
-    private final UserRepository userRepository = mock(UserRepository.class);
+    private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final UserService testUserService = new UserServiceImpl(userRepository);
 
     @Test
@@ -21,7 +21,8 @@ class UserServiceImplTest {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
         Optional<User> expected = Optional.of(user);
-        when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByUsernameAndPassword("user", "password"))
+                .thenReturn(Optional.of(user));
 
         // When
         Optional<UserDto> actual = testUserService.signIn("user", "password");
@@ -29,21 +30,22 @@ class UserServiceImplTest {
         // Then
         Assertions.assertEquals(expected.get().getUsername(), actual.get().getUsername());
         Assertions.assertEquals(expected.get().getRole(), actual.get().getRole());
-        verify(userRepository).findByUsernameAndPassword("user", "password");
+        Mockito.verify(userRepository).findByUsernameAndPassword("user", "password");
     }
 
     @Test
     void testSignInNonPrivilegedUserShouldReturnOptionalEmptyWhenUsernameAndPasswordAreIncorrect() {
         // Given
         Optional<UserDto> expected = Optional.empty();
-        when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByUsernameAndPassword("user", "password"))
+                .thenReturn(Optional.empty());
 
         // When
         Optional<UserDto> actual = testUserService.signIn("user", "password");
 
         // Then
         Assertions.assertEquals(expected, actual);
-        verify(userRepository).findByUsernameAndPassword("user", "password");
+        Mockito.verify(userRepository).findByUsernameAndPassword("user", "password");
     }
 
     @Test
@@ -51,7 +53,8 @@ class UserServiceImplTest {
         // Given
         User user = new User(null,"admin", "admin", User.Role.ADMIN);
         Optional<User> expected = Optional.of(user);
-        when(userRepository.findByUsernameAndPassword("admin", "admin")).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByUsernameAndPassword("admin", "admin"))
+                .thenReturn(Optional.of(user));
 
         // When
         Optional<UserDto> actual = testUserService.signInPrivileged("admin", "admin");
@@ -59,21 +62,22 @@ class UserServiceImplTest {
         // Then
         Assertions.assertEquals(expected.get().getUsername(), actual.get().getUsername());
         Assertions.assertEquals(expected.get().getRole(), actual.get().getRole());
-        verify(userRepository).findByUsernameAndPassword("admin", "admin");
+        Mockito.verify(userRepository).findByUsernameAndPassword("admin", "admin");
     }
 
     @Test
     void testSignInPrivilegedUserShouldReturnOptionalEmptyWhenUsernameAndPasswordAreIncorrect() {
         // Given
         Optional<UserDto> expected = Optional.empty();
-        when(userRepository.findByUsernameAndPassword("admin", "admin")).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByUsernameAndPassword("admin", "admin"))
+                .thenReturn(Optional.empty());
 
         // When
         Optional<UserDto> actual = testUserService.signInPrivileged("admin", "admin");
 
         // Then
         Assertions.assertEquals(expected, actual);
-        verify(userRepository).findByUsernameAndPassword("admin", "admin");
+        Mockito.verify(userRepository).findByUsernameAndPassword("admin", "admin");
     }
 
     @Test
@@ -81,21 +85,23 @@ class UserServiceImplTest {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
         Optional<UserDto> expected = Optional.empty();
-        when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByUsernameAndPassword("user", "password"))
+                .thenReturn(Optional.of(user));
 
         // When
         Optional<UserDto> actual = testUserService.signInPrivileged("user", "password");
 
         // Then
         Assertions.assertEquals(expected, actual);
-        verify(userRepository).findByUsernameAndPassword("user", "password");
+        Mockito.verify(userRepository).findByUsernameAndPassword("user", "password");
     }
 
     @Test
     void testSignOutUserShouldReturnPreviouslySignedInOptionalUserWhenSignedIn() {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
-        when(userRepository.findByUsernameAndPassword("user", "password")).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByUsernameAndPassword("user", "password"))
+                .thenReturn(Optional.of(user));
         Optional<UserDto> expected = testUserService.signIn("user", "password");
 
         // When
@@ -103,7 +109,7 @@ class UserServiceImplTest {
 
         // Then
         Assertions.assertEquals(expected, actual);
-        verify(userRepository).findByUsernameAndPassword("user", "password");
+        Mockito.verify(userRepository).findByUsernameAndPassword("user", "password");
     }
 
     @Test
@@ -122,7 +128,8 @@ class UserServiceImplTest {
     void testGetCurrentUserShouldReturnCurrentOptionalUserWhenSignedInNonPrivileged() {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
-        when(userRepository.findByUsernameAndPassword("user", "pass")).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByUsernameAndPassword("user", "pass"))
+                .thenReturn(Optional.of(user));
         Optional<UserDto> expected = testUserService.signIn("user", "password");
 
         // When
@@ -130,14 +137,15 @@ class UserServiceImplTest {
 
         // Then
         assertEquals(expected, actual);
-        verify(userRepository).findByUsernameAndPassword("user", "password");
+        Mockito.verify(userRepository).findByUsernameAndPassword("user", "password");
     }
 
     @Test
     void testGetCurrentUserShouldReturnCurrentOptionalUserWhenSignedInPrivileged() {
         // Given
         User user = new User(null,"admin", "admin", User.Role.ADMIN);
-        when(userRepository.findByUsernameAndPassword("admin", "admin")).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByUsernameAndPassword("admin", "admin"))
+                .thenReturn(Optional.of(user));
         Optional<UserDto> expected = testUserService.signInPrivileged("admin", "admin");
 
         // When
@@ -145,7 +153,7 @@ class UserServiceImplTest {
 
         // Then
         assertEquals(expected, actual);
-        verify(userRepository).findByUsernameAndPassword("admin", "admin");
+        Mockito.verify(userRepository).findByUsernameAndPassword("admin", "admin");
     }
 
     @Test
@@ -158,5 +166,33 @@ class UserServiceImplTest {
 
         // Then
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void testSignUpShouldSaveUserWhenUsernameIsNotTaken() {
+        // Given
+        User user = new User(null,"user", "password", User.Role.USER);
+        Mockito.when(userRepository.findByUsername(user.getUsername()))
+                .thenReturn(Optional.empty());
+
+        // When
+        testUserService.signUp(user.getUsername(), user.getPassword());
+
+        // Then
+        Mockito.verify(userRepository).findByUsername(user.getUsername());
+        Mockito.verify(userRepository).save(user);
+    }
+
+    @Test
+    void testSignUpShouldThrowErrorUsernameIsTaken() {
+        // Given
+        User user = new User(null,"user", "password", User.Role.USER);
+        Mockito.when(userRepository.findByUsername(user.getUsername()))
+                .thenReturn(Optional.of(user));
+
+        // When Then
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> testUserService.signUp(user.getUsername(), "anypassword"));
+        Mockito.verify(userRepository).findByUsername(user.getUsername());
     }
 }

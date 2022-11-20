@@ -30,7 +30,7 @@ class UserCommandTest {
         Mockito.when(userServiceMock.getCurrentUser())
                 .thenReturn(Optional.of(testUserDto));
 
-        String expectedOutput = "Signed in with account " + testUser.getUsername();
+        String expectedOutput = "Signed in with account '" + testUser.getUsername() + "'";
         Optional<UserDto> expectedUserDTO = Optional.of(testUserDto);
 
         //When
@@ -96,9 +96,6 @@ class UserCommandTest {
         Mockito.when(userServiceMock.signInPrivileged(testAdmin.getUsername(), testAdmin.getPassword()))
                 .thenReturn(Optional.empty());
 
-        Mockito.when(userServiceMock.getCurrentUser())
-                .thenReturn(Optional.empty());
-
         String expectedOutput = "Login failed due to incorrect credentials";
         Optional<UserDto> expectedUserDTO = Optional.empty();
 
@@ -153,12 +150,15 @@ class UserCommandTest {
     }
 
     @Test
-    void testDescribeShouldReturnUserDescriptionWhenRegularUserIsLoggedIn() {
+    void testDescribeShouldReturnUserDescriptionWithoutBookingsWhenRegularUserIsLoggedInAndHasNoBookingsYet() {
         //Given
         Mockito.when(userServiceMock.getCurrentUser())
                 .thenReturn(Optional.of(testUserDto));
 
-        String expectedOutput = "Signed in as " + testUser.getUsername()
+        Mockito.when(bookingServiceMock.findBookings(testUserDto))
+                .thenReturn(Optional.empty());
+
+        String expectedOutput = "Signed in with account '" + testUser.getUsername() + "'"
                 + "\nYou have not booked any tickets yet";
 
         //When
@@ -167,6 +167,31 @@ class UserCommandTest {
         //Then
         Assertions.assertEquals(expectedOutput, actualOutput);
         Mockito.verify(userServiceMock).getCurrentUser();
+        Mockito.verify(bookingServiceMock).findBookings(testUserDto);
+    }
+
+    @Test
+    void testDescribeShouldReturnUserDescriptionWithBookingsWhenRegularUserIsLoggedInAndHasBookings() {
+        //Given
+        Mockito.when(userServiceMock.getCurrentUser())
+                .thenReturn(Optional.of(testUserDto));
+
+        String bookingListString = "bookingsList";
+
+        Mockito.when(bookingServiceMock.findBookings(testUserDto))
+                .thenReturn(Optional.of(bookingListString));
+
+        String expectedOutput = "Signed in with account '" + testUser.getUsername() + "'"
+                + "\nYour previous bookings are\n"
+                + bookingListString;
+
+        //When
+        String actualOutput = testUserCommandComponent.describe();
+
+        //Then
+        Assertions.assertEquals(expectedOutput, actualOutput);
+        Mockito.verify(userServiceMock).getCurrentUser();
+        Mockito.verify(bookingServiceMock).findBookings(testUserDto);
     }
 
     @Test
@@ -199,5 +224,20 @@ class UserCommandTest {
         //Then
         Assertions.assertEquals(expectedOutput, actualOutput);
         Mockito.verify(userServiceMock).getCurrentUser();
+    }
+
+    @Test
+    void testSignUpShouldCreateNewAccountWhenInputsAreValid() {
+        //Given
+        String expectedOutput = testUser.getUsername() + " account created.";
+
+        //When
+
+        String actualOutput = testUserCommandComponent
+                .signUp(testUser.getUsername(), testUser.getPassword());
+
+        //Then
+        Assertions.assertEquals(expectedOutput, actualOutput);
+        Mockito.verify(userServiceMock).signUp(testUser.getUsername(), testUser.getPassword());
     }
 }
