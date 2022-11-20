@@ -36,7 +36,7 @@ public class UserCommand {
             return "Login failed due to incorrect credentials";
         }
 
-        return "Signed in with account " + user.get().getUsername();
+        return "Signed in with account '" + user.get().getUsername() + "'";
     }
 
     @SuppressWarnings("unused")
@@ -66,8 +66,9 @@ public class UserCommand {
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder
-                    .append("Signed in as ")
+                    .append("Signed in with account '")
                     .append(userName)
+                    .append("'")
                     .append("\n");
 
             Optional<String> bookingListReadable = bookingService.findBookings(user.get());
@@ -77,6 +78,7 @@ public class UserCommand {
                 stringBuilder.append("You have not booked any tickets yet");
 
             } else {
+
                 stringBuilder
                         .append("Your previous bookings are")
                         .append("\n")
