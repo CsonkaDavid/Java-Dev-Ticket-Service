@@ -5,20 +5,25 @@ import com.epam.training.ticketservice.core.model.MovieDto;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
-
+@ExtendWith(MockitoExtension.class)
 class MovieServiceImplTest {
 
     private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76);
     private final MovieDto TEST_MOVIE_DTO = new MovieDto("Avengers", "action", 76);
 
-    private final MovieRepository movieRepository = mock(MovieRepository.class);
-    private final MovieService testMovieService = new MovieServiceImpl(movieRepository);
+    @Mock
+    private MovieRepository movieRepository;
+    @InjectMocks
+    private MovieServiceImpl testMovieService;
 
     @Test
     void testCreateMovieShouldStoreGivenMovieWhenInputIsValid() {
