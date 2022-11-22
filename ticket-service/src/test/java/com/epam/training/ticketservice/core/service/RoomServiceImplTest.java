@@ -5,15 +5,22 @@ import com.epam.training.ticketservice.core.model.RoomDto;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
+@ExtendWith(MockitoExtension.class)
 class RoomServiceImplTest {
 
-    private final RoomRepository roomRepositoryMock = Mockito.mock(RoomRepository.class);
-    private final RoomService testRoomService = new RoomServiceImpl(roomRepositoryMock);
+    @Mock
+    private RoomRepository roomRepositoryMock;
+    @InjectMocks
+    private RoomServiceImpl testRoomService;
 
     private final Room TEST_ROOM = new Room(null, "R1", 15, 20);
     private final RoomDto TEST_ROOM_DTO = new RoomDto("R1", 15, 20);
