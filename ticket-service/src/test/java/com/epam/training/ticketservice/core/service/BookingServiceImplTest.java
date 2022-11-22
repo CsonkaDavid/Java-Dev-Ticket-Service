@@ -16,30 +16,35 @@ import com.epam.training.ticketservice.core.repository.UserRepository;
 import com.epam.training.ticketservice.core.time.ApplicationDateFormatter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
+@ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
 
-    private final BookingRepository bookingRepositoryMock = Mockito.mock(BookingRepository.class);
-    private final ScreeningRepository screeningRepositoryMock = Mockito.mock(ScreeningRepository.class);
-    private final MovieRepository movieRepositoryMock = Mockito.mock(MovieRepository.class);
-    private final RoomRepository roomRepositoryMock = Mockito.mock(RoomRepository.class);
-    private final UserRepository userRepositoryMock = Mockito.mock(UserRepository.class);
-    private final ApplicationDateFormatter applicationDateFormatterMock = Mockito.mock(ApplicationDateFormatter.class);
+    @Mock
+    private BookingRepository bookingRepositoryMock;
+    @Mock
+    private ScreeningRepository screeningRepositoryMock;
+    @Mock
+    private MovieRepository movieRepositoryMock;
+    @Mock
+    private RoomRepository roomRepositoryMock;
+    @Mock
+    private UserRepository userRepositoryMock;
+    @Mock
+    private ApplicationDateFormatter applicationDateFormatterMock;
 
-    private final BookingService testBookingService = new BookingServiceImpl(
-            bookingRepositoryMock,
-            screeningRepositoryMock,
-            movieRepositoryMock,
-            roomRepositoryMock,
-            userRepositoryMock,
-            applicationDateFormatterMock
-    );
+    @InjectMocks
+    private BookingServiceImpl testBookingService;
 
     private final String timePattern = "yyyy-MM-dd HH:mm";
     private final SimpleDateFormat testSimpleDateFormat = new SimpleDateFormat(timePattern);
@@ -62,22 +67,67 @@ class BookingServiceImplTest {
 
     private final Screening TEST_SCREENING2 = new Screening(null, TEST_MOVIE, TEST_ROOM2, null);
 
-    private final BookingSeat TEST_BOOKING_SEAT = new BookingSeat(null, 1,2);
+    private final BookingSeat TEST_BOOKING_SEAT1 = new BookingSeat(null, 1,2);
+    private final BookingSeat TEST_BOOKING_SEAT2 = new BookingSeat(null, 1,3);
 
     private final Booking testBooking1 = new Booking(
             null, TEST_USER,
             TEST_SCREENING1,
-            List.of(TEST_BOOKING_SEAT),
+            List.of(TEST_BOOKING_SEAT1, TEST_BOOKING_SEAT2),
             3000);
 
     private final Booking testBooking2 = new Booking(
             null, TEST_USER,
             TEST_SCREENING2,
-            List.of(TEST_BOOKING_SEAT),
+            List.of(TEST_BOOKING_SEAT1, TEST_BOOKING_SEAT2),
             3000);
 
     @Test
-    void testBookShouldReturnBookingInformationWhenInputsAreValid() throws ParseException {
+    void testBookShouldReturnBookingInformationWhenInputsAreValidAndNoSeatsAreTakenOrNonexistent() throws ParseException {
+        //Given
+        Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
+                .thenReturn(Optional.of(TEST_USER));
+        Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
+                .thenReturn(Optional.of(TEST_MOVIE));
+        Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
+                .thenReturn(Optional.of(TEST_ROOM1));
+        Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+        Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
+                        TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
+                .thenReturn(Optional.of(TEST_SCREENING1));
+        User seatTaker = new User(null, "user2", "password2", User.Role.USER);
+        Booking takenBooking = new Booking(
+                null,
+                seatTaker,
+                TEST_SCREENING1,
+                List.of(TEST_BOOKING_SEAT1, TEST_BOOKING_SEAT2),
+                0);
+
+        Mockito.when(bookingRepositoryMock.findAllByScreening(TEST_SCREENING1))
+                .thenReturn(List.of(takenBooking));
+
+        String expected = "Seats booked: "
+                + "(5,5), (5,6); the price for this booking is"
+                + " 3000 HUF";
+
+        //When
+        String actual = testBookingService.book(TEST_USER_DTO, TEST_SCREENING_DTO, "5,5 5,6");
+
+        //Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(userRepositoryMock).findByUsername(TEST_USER.getUsername());
+        Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
+        Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM1.getName());
+        Mockito.verify(applicationDateFormatterMock).parseStringToDate(TEST_TIME_FORMATTED);
+        Mockito.verify(screeningRepositoryMock)
+                .findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM1,
+                        testSimpleDateFormat.parse(TEST_TIME_FORMATTED));
+        Mockito.verify(bookingRepositoryMock).findAllByScreening(TEST_SCREENING1);
+    }
+
+    @Test
+    void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatRowIsNonexistent() throws ParseException {
         //Given
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
@@ -91,13 +141,13 @@ class BookingServiceImplTest {
                         TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.of(TEST_SCREENING1));
 
-        String expected = "Seats booked: "
-                + "(5,5); the price for this booking is"
-                + " 1500 HUF";;
+        String expected = "Seat (100,2) does not exist in this room";
 
         //When
-
-        String actual = testBookingService.book(TEST_USER_DTO, TEST_SCREENING_DTO, "5,5");
+        String actual = testBookingService.book(
+                TEST_USER_DTO,
+                TEST_SCREENING_DTO,
+                "2,2 2,3 100,2 4,6");
 
         //Then
         Assertions.assertEquals(expected, actual);
@@ -106,7 +156,169 @@ class BookingServiceImplTest {
         Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM1.getName());
         Mockito.verify(applicationDateFormatterMock).parseStringToDate(TEST_TIME_FORMATTED);
         Mockito.verify(screeningRepositoryMock)
-                .findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED));
+                .findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM1,
+                        testSimpleDateFormat.parse(TEST_TIME_FORMATTED));
+    }
+
+    @Test
+    void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatColumnIsNonexistent() throws ParseException {
+        //Given
+        Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
+                .thenReturn(Optional.of(TEST_USER));
+        Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
+                .thenReturn(Optional.of(TEST_MOVIE));
+        Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
+                .thenReturn(Optional.of(TEST_ROOM1));
+        Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+        Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
+                        TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
+                .thenReturn(Optional.of(TEST_SCREENING1));
+
+        String expected = "Seat (2,100) does not exist in this room";
+
+        //When
+        String actual = testBookingService.book(
+                TEST_USER_DTO,
+                TEST_SCREENING_DTO,
+                "2,2 2,3 2,100 4,6");
+
+        //Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(userRepositoryMock).findByUsername(TEST_USER.getUsername());
+        Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
+        Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM1.getName());
+        Mockito.verify(applicationDateFormatterMock).parseStringToDate(TEST_TIME_FORMATTED);
+        Mockito.verify(screeningRepositoryMock)
+                .findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM1,
+                        testSimpleDateFormat.parse(TEST_TIME_FORMATTED));
+    }
+
+    @Test
+    void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatRowIsZero() throws ParseException {
+        //Given
+        Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
+                .thenReturn(Optional.of(TEST_USER));
+        Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
+                .thenReturn(Optional.of(TEST_MOVIE));
+        Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
+                .thenReturn(Optional.of(TEST_ROOM1));
+        Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+        Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
+                        TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
+                .thenReturn(Optional.of(TEST_SCREENING1));
+
+        String expected = "Seat (0,2) does not exist in this room";
+
+        //When
+        String actual = testBookingService.book(
+                TEST_USER_DTO,
+                TEST_SCREENING_DTO,
+                "2,2 2,3 0,2 4,6");
+
+        //Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(userRepositoryMock).findByUsername(TEST_USER.getUsername());
+        Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
+        Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM1.getName());
+        Mockito.verify(applicationDateFormatterMock).parseStringToDate(TEST_TIME_FORMATTED);
+        Mockito.verify(screeningRepositoryMock)
+                .findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM1,
+                        testSimpleDateFormat.parse(TEST_TIME_FORMATTED));
+    }
+
+    @Test
+    void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatColumnIsZero() throws ParseException {
+        //Given
+        Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
+                .thenReturn(Optional.of(TEST_USER));
+        Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
+                .thenReturn(Optional.of(TEST_MOVIE));
+        Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
+                .thenReturn(Optional.of(TEST_ROOM1));
+        Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+        Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
+                        TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
+                .thenReturn(Optional.of(TEST_SCREENING1));
+
+        String expected = "Seat (2,0) does not exist in this room";
+
+        //When
+
+        String actual = testBookingService.book(
+                TEST_USER_DTO,
+                TEST_SCREENING_DTO,
+                "2,2 2,3 2,0 4,6");
+
+        //Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(userRepositoryMock).findByUsername(TEST_USER.getUsername());
+        Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
+        Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM1.getName());
+        Mockito.verify(applicationDateFormatterMock).parseStringToDate(TEST_TIME_FORMATTED);
+        Mockito.verify(screeningRepositoryMock)
+                .findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM1,
+                        testSimpleDateFormat.parse(TEST_TIME_FORMATTED));
+    }
+
+    @Test
+    void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatsAreTaken() throws ParseException {
+        //Given
+        Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
+                .thenReturn(Optional.of(TEST_USER));
+        Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
+                .thenReturn(Optional.of(TEST_MOVIE));
+        Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
+                .thenReturn(Optional.of(TEST_ROOM1));
+        Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+        Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
+                        TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
+                .thenReturn(Optional.of(TEST_SCREENING1));
+
+        User seatTaker = new User(null, "user2", "password2", User.Role.USER);
+        Booking takenBooking = new Booking(
+                null,
+                seatTaker,
+                TEST_SCREENING1,
+                List.of(TEST_BOOKING_SEAT1, TEST_BOOKING_SEAT2),
+                0);
+
+        Mockito.when(bookingRepositoryMock.findAllByScreening(TEST_SCREENING1))
+                .thenReturn(List.of(takenBooking));
+
+        String expected = "Seat ("
+                + TEST_BOOKING_SEAT2.getSeatRow()
+                + ","
+                + TEST_BOOKING_SEAT2.getSeatColumn()
+                + ") is already taken";
+
+        //When
+
+        String actual = testBookingService.book(
+                TEST_USER_DTO,
+                TEST_SCREENING_DTO,
+                TEST_BOOKING_SEAT1.getSeatRow()
+                        + ","
+                        + TEST_BOOKING_SEAT1.getSeatColumn()
+                        + " "
+                        + TEST_BOOKING_SEAT2.getSeatRow()
+                        + ","
+                        + TEST_BOOKING_SEAT2.getSeatColumn()
+        );
+
+        //Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(userRepositoryMock).findByUsername(TEST_USER.getUsername());
+        Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
+        Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM1.getName());
+        Mockito.verify(applicationDateFormatterMock).parseStringToDate(TEST_TIME_FORMATTED);
+        Mockito.verify(screeningRepositoryMock)
+                .findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM1,
+                        testSimpleDateFormat.parse(TEST_TIME_FORMATTED));
+        Mockito.verify(bookingRepositoryMock).findAllByScreening(TEST_SCREENING1);
     }
 
     @Test
@@ -219,9 +431,14 @@ class BookingServiceImplTest {
 
         expectedFirstLine
                 .append("Seats (")
-                .append(TEST_BOOKING_SEAT.getSeatRow())
+                .append(TEST_BOOKING_SEAT1.getSeatRow())
                 .append(",")
-                .append(TEST_BOOKING_SEAT.getSeatColumn()).append(") on ")
+                .append(TEST_BOOKING_SEAT1.getSeatColumn())
+                .append("), (")
+                .append(TEST_BOOKING_SEAT2.getSeatRow())
+                .append(",")
+                .append(TEST_BOOKING_SEAT2.getSeatColumn())
+                .append(") on ")
                 .append(TEST_MOVIE.getTitle())
                 .append(" in room ")
                 .append(TEST_ROOM1.getName())
@@ -231,9 +448,13 @@ class BookingServiceImplTest {
 
         expectedSecondLine
                 .append("Seats (")
-                .append(TEST_BOOKING_SEAT.getSeatRow())
+                .append(TEST_BOOKING_SEAT1.getSeatRow())
                 .append(",")
-                .append(TEST_BOOKING_SEAT.getSeatColumn())
+                .append(TEST_BOOKING_SEAT1.getSeatColumn())
+                .append("), (")
+                .append(TEST_BOOKING_SEAT2.getSeatRow())
+                .append(",")
+                .append(TEST_BOOKING_SEAT2.getSeatColumn())
                 .append(") on ")
                 .append(TEST_MOVIE.getTitle())
                 .append(" in room ")
@@ -285,6 +506,7 @@ class BookingServiceImplTest {
         Optional<String> actual = testBookingService.findBookings(TEST_USER_DTO);
 
         //Then
+        Assertions.assertEquals(expected, actual);
         Mockito.verify(userRepositoryMock).findByUsername(TEST_USER.getUsername());
         Mockito.verify(bookingRepositoryMock).findAllByUser(TEST_USER);
     }
