@@ -5,16 +5,23 @@ import com.epam.training.ticketservice.core.model.UserDto;
 import com.epam.training.ticketservice.core.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-    private final UserRepository userRepository = Mockito.mock(UserRepository.class);
-    private final UserService testUserService = new UserServiceImpl(userRepository);
+    @Mock
+    private UserRepository userRepository;
+    @InjectMocks
+    private UserServiceImpl testUserService;
 
     @Test
     void testSignInNonPrivilegedUserShouldReturnCurrentOptionalUserWhenUsernameAndPasswordAreCorrect() {
@@ -128,7 +135,7 @@ class UserServiceImplTest {
     void testGetCurrentUserShouldReturnCurrentOptionalUserWhenSignedInNonPrivileged() {
         // Given
         User user = new User(null,"user", "password", User.Role.USER);
-        Mockito.when(userRepository.findByUsernameAndPassword("user", "pass"))
+        Mockito.when(userRepository.findByUsernameAndPassword("user", "password"))
                 .thenReturn(Optional.of(user));
         Optional<UserDto> expected = testUserService.signIn("user", "password");
 
