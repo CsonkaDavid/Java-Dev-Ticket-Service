@@ -12,7 +12,11 @@ import com.epam.training.ticketservice.core.repository.ScreeningRepository;
 import com.epam.training.ticketservice.core.time.ApplicationDateFormatter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,14 +24,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@ExtendWith(MockitoExtension.class)
 class ScreeningServiceImplTest {
 
-    private final ScreeningRepository screeningRepositoryMock = Mockito.mock(ScreeningRepository.class);
-    private final RoomRepository roomRepositoryMock = Mockito.mock(RoomRepository.class);
-    private final MovieRepository movieRepositoryMock = Mockito.mock(MovieRepository.class);
-    private final ApplicationDateFormatter dateFormatterMock = Mockito.mock(ApplicationDateFormatter.class);
-    private final ScreeningService testScreeningService = new ScreeningServiceImpl(
-            screeningRepositoryMock, roomRepositoryMock, movieRepositoryMock, dateFormatterMock);
+    @Mock
+    private ScreeningRepository screeningRepositoryMock;
+    @Mock
+    private RoomRepository roomRepositoryMock;
+    @Mock
+    private MovieRepository movieRepositoryMock;
+    @Mock
+    private ApplicationDateFormatter dateFormatterMock;
+    @InjectMocks
+    private ScreeningServiceImpl testScreeningService;
 
     private final String timePattern = "yyyy-MM-dd HH:mm";
     private final SimpleDateFormat testSimpleDateFormat = new SimpleDateFormat(timePattern);
@@ -211,9 +220,6 @@ class ScreeningServiceImplTest {
         // Given
         Mockito.when(dateFormatterMock.parseStringToDate(testTime))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(testTime)));
-
-        Mockito.when(dateFormatterMock.getPattern())
-                .thenReturn(timePattern);
 
         Date date = dateFormatterMock.parseStringToDate(testTime)
                 .orElseThrow(() -> new IllegalArgumentException("Can't parse date!"));
