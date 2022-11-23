@@ -1,5 +1,6 @@
 package com.epam.training.ticketservice.core.service;
 
+import com.epam.training.ticketservice.core.entity.BasePrice;
 import com.epam.training.ticketservice.core.entity.Booking;
 import com.epam.training.ticketservice.core.entity.BookingSeat;
 import com.epam.training.ticketservice.core.entity.Movie;
@@ -9,6 +10,7 @@ import com.epam.training.ticketservice.core.entity.User;
 import com.epam.training.ticketservice.core.model.BookingDto;
 import com.epam.training.ticketservice.core.model.ScreeningDto;
 import com.epam.training.ticketservice.core.model.UserDto;
+import com.epam.training.ticketservice.core.repository.BasePriceRepository;
 import com.epam.training.ticketservice.core.repository.BookingRepository;
 import com.epam.training.ticketservice.core.repository.ScreeningRepository;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
@@ -34,7 +36,8 @@ public class BookingServiceImpl implements BookingService {
     private final MovieRepository movieRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
-    private final ApplicationDateFormatter applicationDateFormatter;
+    private final BasePriceRepository basePriceRepository;
+    private final ApplicationDateFormatter dateFormatter;
 
     @Override
     public Optional<String> findBookings(UserDto userDto) {
@@ -66,7 +69,7 @@ public class BookingServiceImpl implements BookingService {
         Room room = roomRepository.findByName(screeningDto.getRoomName())
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
-        Date date = applicationDateFormatter.parseStringToDate(screeningDto.getFormattedDateTime())
+        Date date = dateFormatter.parseStringToDate(screeningDto.getFormattedDateTime())
                 .orElseThrow(() -> new IllegalArgumentException("Cannot parse date "
                         + screeningDto.getFormattedDateTime()));
 
@@ -80,7 +83,23 @@ public class BookingServiceImpl implements BookingService {
                 .map(this::convertSeatStringToBookingSeat)
                 .collect(Collectors.toList());
 
-        int price = calculateBookingPrice(bookingSeatList);
+        int moviePriceComponent = movie.getPriceComponent() == null
+                ? 0
+                : movie.getPriceComponent().getAmount();
+
+        int roomPriceComponent = room.getPriceComponent() == null
+                ? 0
+                : room.getPriceComponent().getAmount();
+
+        int screeningPriceComponent = screening.getPriceComponent() == null
+                ? 0
+                : screening.getPriceComponent().getAmount();
+
+        int price = calculateBookingPrice(
+                moviePriceComponent,
+                roomPriceComponent,
+                screeningPriceComponent,
+                splitStringList.size());
 
         Booking booking = new Booking(null, user, screening, bookingSeatList, price);
 
@@ -104,8 +123,20 @@ public class BookingServiceImpl implements BookingService {
         return "Seats booked: " + seatListString + "; the price for this booking is " + price + " HUF";
     }
 
-    private int calculateBookingPrice(List<BookingSeat> seatList) {
-        return 1500 * seatList.size();
+    @Override
+    public int calculateBookingPrice(int moviePriceComponent,
+                                     int roomPriceComponent,
+                                     int screeningPriceComponent,
+                                     int seats) {
+
+        BasePrice basePrice = basePriceRepository.findAll().get(0);
+
+        int totalSeatPrice = basePrice.getAmount()
+                + moviePriceComponent
+                + roomPriceComponent
+                + screeningPriceComponent;
+
+        return totalSeatPrice * seats;
     }
 
     private String convertSeatStringListToReadable(List<String> splitStringList) {
@@ -241,7 +272,7 @@ public class BookingServiceImpl implements BookingService {
         Screening screening = booking.getScreening();
         String movie = screening.getMovie().getTitle();
         String room = screening.getRoom().getName();
-        String date = applicationDateFormatter.convertDateToString(screening.getDate());
+        String date = dateFormatter.convertDateToString(screening.getDate());
         String seats = convertSeatStringListToReadable(convertBookingSeatListToSeatStringList(booking.getSeats()));
 
         return new BookingDto(movie, room, date, seats, booking.getPrice());
