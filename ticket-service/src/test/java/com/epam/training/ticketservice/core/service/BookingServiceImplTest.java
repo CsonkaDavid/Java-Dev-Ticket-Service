@@ -1,5 +1,6 @@
 package com.epam.training.ticketservice.core.service;
 
+import com.epam.training.ticketservice.core.entity.BasePrice;
 import com.epam.training.ticketservice.core.entity.Booking;
 import com.epam.training.ticketservice.core.entity.BookingSeat;
 import com.epam.training.ticketservice.core.entity.Movie;
@@ -8,6 +9,7 @@ import com.epam.training.ticketservice.core.entity.Screening;
 import com.epam.training.ticketservice.core.entity.User;
 import com.epam.training.ticketservice.core.model.ScreeningDto;
 import com.epam.training.ticketservice.core.model.UserDto;
+import com.epam.training.ticketservice.core.repository.BasePriceRepository;
 import com.epam.training.ticketservice.core.repository.BookingRepository;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
@@ -30,6 +32,8 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
 
+    @Mock
+    private BasePriceRepository basePriceRepositoryMock;
     @Mock
     private BookingRepository bookingRepositoryMock;
     @Mock
@@ -54,18 +58,19 @@ class BookingServiceImplTest {
     private final User TEST_USER = new User(null, "user", "password", User.Role.USER);
     private final UserDto TEST_USER_DTO = new UserDto(TEST_USER.getUsername(), User.Role.USER);
 
-    private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76);
+    private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76, null);
 
-    private final Room TEST_ROOM1 = new Room(null, "R1", 15, 20);
-    private final Room TEST_ROOM2 = new Room(null, "R2", 15, 20);
+    private final Room TEST_ROOM1 = new Room(null, "R1", 15, 20, null);
+    private final Room TEST_ROOM2 = new Room(null, "R2", 15, 20, null);
 
-    private final Screening TEST_SCREENING1 = new Screening(null, TEST_MOVIE, TEST_ROOM1, null);
+    private final Screening TEST_SCREENING1 = new Screening(null, TEST_MOVIE, TEST_ROOM1, null, null);
     private final ScreeningDto TEST_SCREENING_DTO = new ScreeningDto(
             TEST_MOVIE.getTitle(),
             TEST_ROOM1.getName(),
-            TEST_TIME_FORMATTED);
+            TEST_TIME_FORMATTED,
+            null);
 
-    private final Screening TEST_SCREENING2 = new Screening(null, TEST_MOVIE, TEST_ROOM2, null);
+    private final Screening TEST_SCREENING2 = new Screening(null, TEST_MOVIE, TEST_ROOM2, null, null);
 
     private final BookingSeat TEST_BOOKING_SEAT1 = new BookingSeat(null, 1,2);
     private final BookingSeat TEST_BOOKING_SEAT2 = new BookingSeat(null, 1,3);
@@ -85,6 +90,8 @@ class BookingServiceImplTest {
     @Test
     void testBookShouldReturnBookingInformationWhenInputsAreValidAndNoSeatsAreTakenOrNonexistent() throws ParseException {
         //Given
+        Mockito.when(basePriceRepositoryMock.findAll())
+                .thenReturn(List.of(new BasePrice(1, 1500)));
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
@@ -129,6 +136,8 @@ class BookingServiceImplTest {
     @Test
     void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatRowIsNonexistent() throws ParseException {
         //Given
+        Mockito.when(basePriceRepositoryMock.findAll())
+                .thenReturn(List.of(new BasePrice(1, 1500)));
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
@@ -163,6 +172,8 @@ class BookingServiceImplTest {
     @Test
     void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatColumnIsNonexistent() throws ParseException {
         //Given
+        Mockito.when(basePriceRepositoryMock.findAll())
+                .thenReturn(List.of(new BasePrice(1, 1500)));
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
@@ -197,6 +208,8 @@ class BookingServiceImplTest {
     @Test
     void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatRowIsZero() throws ParseException {
         //Given
+        Mockito.when(basePriceRepositoryMock.findAll())
+                .thenReturn(List.of(new BasePrice(1, 1500)));
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
@@ -231,6 +244,8 @@ class BookingServiceImplTest {
     @Test
     void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatColumnIsZero() throws ParseException {
         //Given
+        Mockito.when(basePriceRepositoryMock.findAll())
+                .thenReturn(List.of(new BasePrice(1, 1500)));
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
@@ -266,6 +281,8 @@ class BookingServiceImplTest {
     @Test
     void testBookShouldReturnErrorMessageWhenInputsAreValidAndSeatsAreTaken() throws ParseException {
         //Given
+        Mockito.when(basePriceRepositoryMock.findAll())
+                .thenReturn(List.of(new BasePrice(1, 1500)));
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
