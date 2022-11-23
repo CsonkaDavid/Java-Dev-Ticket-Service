@@ -18,7 +18,12 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void createRoom(RoomDto roomDto) {
-        roomRepository.save(new Room(null, roomDto.getName(), roomDto.getRows(), roomDto.getColumns()));
+        roomRepository.save(new Room(
+                null,
+                roomDto.getName(),
+                roomDto.getRows(),
+                roomDto.getColumns(),
+                null));
     }
 
     @Override
@@ -50,7 +55,11 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private RoomDto convertRoomToDto(Room room) {
-        return new RoomDto(room.getName(), room.getRows(), room.getColumns());
+        return new RoomDto(
+                room.getName(),
+                room.getRows(),
+                room.getColumns(),
+                room.getPriceComponent() == null ? 0 : room.getPriceComponent().getAmount());
     }
 
     private Optional<RoomDto> convertRoomToDto(Optional<Room> room) {

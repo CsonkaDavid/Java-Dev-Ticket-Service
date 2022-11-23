@@ -26,7 +26,7 @@ public class MovieCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "create movie")
     public String createMovie(String title, String genre, Integer runTime) {
-        MovieDto movieDto = new MovieDto(title, genre, runTime);
+        MovieDto movieDto = new MovieDto(title, genre, runTime, null);
         movieService.createMovie(movieDto);
 
         return movieDto + " created";
@@ -36,7 +36,7 @@ public class MovieCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update movie")
     public String updateMovie(String title, String genre, Integer runTime) {
-        MovieDto movieDto = new MovieDto(title, genre, runTime);
+        MovieDto movieDto = new MovieDto(title, genre, runTime, null);
 
         movieService.updateMovie(title, movieDto);
 

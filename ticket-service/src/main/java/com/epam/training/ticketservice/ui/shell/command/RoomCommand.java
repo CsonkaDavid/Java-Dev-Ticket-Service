@@ -26,7 +26,7 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "create room")
     public String createRoom(String name, Integer rows, Integer columns) {
-        RoomDto roomDto = new RoomDto(name, rows, columns);
+        RoomDto roomDto = new RoomDto(name, rows, columns, null);
         roomService.createRoom(roomDto);
 
         return roomDto + " created";
@@ -36,7 +36,7 @@ public class RoomCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update room")
     public String updateRoom(String name, Integer rows, Integer columns) {
-        RoomDto updateDto = new RoomDto(name, rows, columns);
+        RoomDto updateDto = new RoomDto(name, rows, columns, null);
 
         roomService.updateRoom(name, updateDto);
 

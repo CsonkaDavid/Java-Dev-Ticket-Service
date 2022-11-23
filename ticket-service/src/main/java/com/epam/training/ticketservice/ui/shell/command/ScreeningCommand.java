@@ -10,7 +10,6 @@ import com.epam.training.ticketservice.core.service.RoomService;
 import com.epam.training.ticketservice.core.service.ScreeningService;
 import com.epam.training.ticketservice.core.service.UserService;
 import com.epam.training.ticketservice.core.time.ApplicationDateFormatter;
-import com.epam.training.ticketservice.core.time.ApplicationDateHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
@@ -37,7 +36,7 @@ public class ScreeningCommand {
     @ShellMethod(key = "create screening")
     public String createScreening(String movieTitle, String roomName, String formattedDateTime) {
 
-        ScreeningDto screeningDto = new ScreeningDto(movieTitle, roomName, formattedDateTime);
+        ScreeningDto screeningDto = new ScreeningDto(movieTitle, roomName, formattedDateTime, null);
 
         MovieDto movieDto = movieService.findMovieByTitle(movieTitle)
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));

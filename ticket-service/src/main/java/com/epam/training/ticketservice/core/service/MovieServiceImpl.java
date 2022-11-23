@@ -22,7 +22,8 @@ public class MovieServiceImpl implements MovieService {
                 null,
                 movieDto.getTitle(),
                 movieDto.getGenre(),
-                movieDto.getRunTime()
+                movieDto.getRunTime(),
+                null
         ));
     }
 
@@ -58,7 +59,8 @@ public class MovieServiceImpl implements MovieService {
         return new MovieDto(
                 movie.getTitle(),
                 movie.getGenre(),
-                movie.getRunTime()
+                movie.getRunTime(),
+                movie.getPriceComponent() == null ? 0 : movie.getPriceComponent().getAmount()
         );
     }
 

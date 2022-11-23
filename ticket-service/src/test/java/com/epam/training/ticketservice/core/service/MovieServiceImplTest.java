@@ -17,8 +17,8 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class MovieServiceImplTest {
 
-    private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76);
-    private final MovieDto TEST_MOVIE_DTO = new MovieDto("Avengers", "action", 76);
+    private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76, null);
+    private final MovieDto TEST_MOVIE_DTO = new MovieDto("Avengers", "action", 76, 0);
 
     @Mock
     private MovieRepository movieRepository;

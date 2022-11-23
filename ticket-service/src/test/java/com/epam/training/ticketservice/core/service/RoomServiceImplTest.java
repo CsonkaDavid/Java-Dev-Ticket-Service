@@ -22,8 +22,8 @@ class RoomServiceImplTest {
     @InjectMocks
     private RoomServiceImpl testRoomService;
 
-    private final Room TEST_ROOM = new Room(null, "R1", 15, 20);
-    private final RoomDto TEST_ROOM_DTO = new RoomDto("R1", 15, 20);
+    private final Room TEST_ROOM = new Room(null, "R1", 15, 20, null);
+    private final RoomDto TEST_ROOM_DTO = new RoomDto("R1", 15, 20, 0);
 
     @Test
     void testCreateRoomShouldSaveNewRoomWhenInputIsValid() {
