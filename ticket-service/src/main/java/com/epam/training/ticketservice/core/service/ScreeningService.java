@@ -6,6 +6,7 @@ import com.epam.training.ticketservice.core.model.ScreeningDto;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface ScreeningService {
     String createScreening(ScreeningDto screeningDto);
@@ -13,4 +14,6 @@ public interface ScreeningService {
     void deleteScreening(MovieDto movieDto, RoomDto roomDto, Date date);
 
     List<ScreeningDto> getScreeningList();
+
+    Optional<ScreeningDto> findScreeningByMovieAndRoomAndDate(MovieDto movieDto, RoomDto roomDto, String dateTime);
 }

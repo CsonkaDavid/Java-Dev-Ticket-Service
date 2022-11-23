@@ -53,7 +53,7 @@ public class ScreeningServiceImpl implements ScreeningService {
             return "This would start in the break period after another screening in this room";
         }
 
-        screeningRepository.save(new Screening(null, movie, room, date));
+        screeningRepository.save(new Screening(null, movie, room, date, null));
 
         return screeningDto + " created";
     }
@@ -78,11 +78,46 @@ public class ScreeningServiceImpl implements ScreeningService {
                 .map(this::convertScreeningToDto).collect(Collectors.toList());
     }
 
+    @Override
+    public Optional<ScreeningDto> findScreeningByMovieAndRoomAndDate(
+            MovieDto movieDto,
+            RoomDto roomDto,
+            String dateTime) {
+
+        Movie movie = movieRepository.findByTitle(movieDto.getTitle())
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
+
+        Room room = roomRepository.findByName(roomDto.getName())
+                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
+
+        Date date = dateFormatter.parseStringToDate(dateTime)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Can't parse date to "
+                                + dateFormatter.getPattern()));
+
+        Optional<Screening> screening = screeningRepository.findByMovieAndRoomAndDate(movie, room, date);
+
+        if (screening.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new ScreeningDto(
+                screening.get().getMovie().getTitle(),
+                screening.get().getRoom().getName(),
+                dateFormatter.convertDateToString(screening.get().getDate()),
+                screening.get().getPriceComponent() == null ? 0 : screening.get().getPriceComponent().getAmount()
+                ));
+    }
+
     private ScreeningDto convertScreeningToDto(Screening screening) {
 
         String formattedDate = dateFormatter.convertDateToString(screening.getDate());
 
-        return new ScreeningDto(screening.getMovie().getTitle(), screening.getRoom().getName(), formattedDate);
+        return new ScreeningDto(
+                screening.getMovie().getTitle(),
+                screening.getRoom().getName(),
+                formattedDate,
+                screening.getPriceComponent() == null ? 0 : screening.getPriceComponent().getAmount());
     }
 
     private boolean isOverlapping(
