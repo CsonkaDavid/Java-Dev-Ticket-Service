@@ -7,4 +7,5 @@ public class MovieDto {
     String title;
     String genre;
     Integer runTime;
+    Integer priceComponent;
 }

@@ -3,9 +3,7 @@ package com.epam.training.ticketservice.core.model;
 import lombok.Value;
 
 @Value
-public class RoomDto {
+public class PriceComponentDto {
     String name;
-    Integer rows;
-    Integer columns;
-    Integer priceComponent;
+    Integer amount;
 }

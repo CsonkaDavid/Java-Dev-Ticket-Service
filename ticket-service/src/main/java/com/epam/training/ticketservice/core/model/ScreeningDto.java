@@ -7,4 +7,5 @@ public class ScreeningDto {
     String movieTitle;
     String roomName;
     String formattedDateTime;
+    Integer priceComponent;
 }
