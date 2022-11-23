@@ -31,7 +31,6 @@ public class ScreeningCommand {
     private final RoomService roomService;
     private final ScreeningService screeningService;
     private final ApplicationDateFormatter dateFormatter;
-    private final ApplicationDateHandler dateHandler;
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
@@ -46,17 +45,7 @@ public class ScreeningCommand {
         RoomDto roomDto = roomService.findRoomByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        if (isOverlapping(screeningDto, movieDto, roomDto, Optional.empty())) {
-            return "There is an overlapping screening";
-        }
-
-        if (isOverlapping(screeningDto, movieDto, roomDto, Optional.of(10))) {
-            return "This would start in the break period after another screening in this room";
-        }
-
-        screeningService.createScreening(screeningDto);
-
-        return screeningDto + " created";
+        return screeningService.createScreening(screeningDto);
     }
 
     @SuppressWarnings("unused")
@@ -108,59 +97,5 @@ public class ScreeningCommand {
         return userDto.isPresent() && userDto.get().getRole() == User.Role.ADMIN
                 ? Availability.available()
                 : Availability.unavailable("You are not an admin!");
-    }
-
-    private boolean isOverlapping(
-            ScreeningDto screeningDto,
-            MovieDto movieDto,
-            RoomDto roomDto,
-            Optional<Integer> breakPeriod) {
-
-        int breakPeriodAmount = breakPeriod.orElse(0);
-
-        Date currentMovieDate = dateFormatter.parseStringToDate(screeningDto.getFormattedDateTime())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Can't parse date to " + dateFormatter.getPattern()));
-
-
-        Date currentMovieEndingDate = dateHandler
-                .addMinutesToDate(currentMovieDate, movieDto.getRunTime() + breakPeriodAmount);
-
-        Optional<ScreeningDto> overlappingScreeningDto = screeningService.getScreeningList()
-                .stream()
-                .filter(s -> s.getRoomName().equals(roomDto.getName()))
-                .filter(s -> {
-
-                    Date checkedMovieDate = dateFormatter.parseStringToDate(s.getFormattedDateTime())
-                            .orElseThrow(() ->
-                                    new IllegalArgumentException("There is no screening with the given parameters!"));
-
-                    MovieDto checkedMovieDto = movieService.findMovieByTitle(s.getMovieTitle())
-                            .orElseThrow(() ->
-                                    new IllegalArgumentException("There is no movie with the given title!"));
-
-                    Date checkedMovieEnding = dateHandler
-                            .addMinutesToDate(checkedMovieDate, checkedMovieDto.getRunTime() + breakPeriodAmount);
-
-                    boolean beginsAfter = false;
-                    boolean endsBefore = false;
-
-                    if ((currentMovieDate.compareTo(checkedMovieDate) >= 0)
-                            && (currentMovieDate.compareTo(checkedMovieEnding) >= 0)) {
-
-                        beginsAfter = true;
-                    }
-
-                    if ((currentMovieDate.compareTo(checkedMovieDate) <= 0)
-                            && (currentMovieEndingDate.compareTo(checkedMovieDate) <= 0)) {
-
-                        endsBefore = true;
-                    }
-
-                    return !(beginsAfter || endsBefore);
-                })
-                .findFirst();
-
-        return overlappingScreeningDto.isPresent();
     }
 }

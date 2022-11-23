@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface ScreeningService {
-    void createScreening(ScreeningDto screeningDto);
+    String createScreening(ScreeningDto screeningDto);
 
     void deleteScreening(MovieDto movieDto, RoomDto roomDto, Date date);
 
