@@ -10,6 +10,7 @@ import com.epam.training.ticketservice.core.repository.MovieRepository;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
 import com.epam.training.ticketservice.core.repository.ScreeningRepository;
 import com.epam.training.ticketservice.core.time.ApplicationDateFormatter;
+import com.epam.training.ticketservice.core.time.ApplicationDateHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +36,8 @@ class ScreeningServiceImplTest {
     private MovieRepository movieRepositoryMock;
     @Mock
     private ApplicationDateFormatter dateFormatterMock;
+    @Mock
+    private ApplicationDateHandler dateHandlerMock;
     @InjectMocks
     private ScreeningServiceImpl testScreeningService;
 
@@ -50,30 +53,219 @@ class ScreeningServiceImplTest {
     private final String testTime = "2022-12-12 12:00";
 
     private final ScreeningDto TEST_SCREENING_DTO =
-            new ScreeningDto(TEST_MOVIE_DTO.getTitle(), TEST_ROOM_DTO.getName(), "2022-12-12 12:00");
+            new ScreeningDto(TEST_MOVIE_DTO.getTitle(), TEST_ROOM_DTO.getName(), testTime);
 
     @Test
-    void testCreateScreeningShouldCreateNewScreeningWhenInputIsValid() throws ParseException {
+    void testCreateScreeningShouldCreateNewScreeningWhenInputIsValidAndThereAreNoOverlaps() throws ParseException {
         // Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+        Mockito.when(dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime()))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_SCREENING_DTO.getFormattedDateTime())));
 
-        Mockito.when(dateFormatterMock.parseStringToDate(testTime))
-                .thenReturn(Optional.of(testSimpleDateFormat.parse(testTime)));
-
-        Date date = dateFormatterMock.parseStringToDate(testTime)
+        Date screeningDate = dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime())
                 .orElseThrow(() -> new IllegalArgumentException("Can't parse date!"));
 
-        Screening TEST_SCREENING = new Screening(null ,TEST_MOVIE, TEST_ROOM, date);
+        Mockito.when(dateHandlerMock.addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime()))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 13:16"));
 
-        Mockito.when(screeningRepositoryMock.save(TEST_SCREENING)).thenReturn(TEST_SCREENING);
+        Mockito.when(dateHandlerMock.addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime() + 10))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 13:26"));
+
+        String testEndsBeforeTime = "2022-12-12 13:30";
+
+        Mockito.when(dateFormatterMock.parseStringToDate(testEndsBeforeTime))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(testEndsBeforeTime)));
+
+        Date endsBeforeDate = dateFormatterMock.parseStringToDate(testEndsBeforeTime).get();
+
+        Screening endsBeforeScreening = new Screening(null ,TEST_MOVIE, TEST_ROOM, endsBeforeDate);
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(endsBeforeDate, endsBeforeScreening.getMovie().getRunTime()))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 14:46"));
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(endsBeforeDate, endsBeforeScreening.getMovie().getRunTime() + 10))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 14:56"));
+
+        String testBeginsAfterTime = "2022-12-12 10:30";
+
+        Mockito.when(dateFormatterMock.parseStringToDate(testBeginsAfterTime))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(testBeginsAfterTime)));
+
+        Date beginsAfterDate = dateFormatterMock.parseStringToDate(testBeginsAfterTime).get();
+
+        Screening beginsAfterScreening = new Screening(null ,TEST_MOVIE, TEST_ROOM, beginsAfterDate);
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(beginsAfterDate, beginsAfterScreening.getMovie().getRunTime()))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 11:46"));
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(beginsAfterDate, beginsAfterScreening.getMovie().getRunTime() + 10))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 11:56"));
+
+        Mockito.when(screeningRepositoryMock.findAll()).thenReturn(List.of(endsBeforeScreening, beginsAfterScreening));
+
+        String expected = TEST_SCREENING_DTO + " created";
 
         // When
-        testScreeningService.createScreening(TEST_SCREENING_DTO);
+        String actual = testScreeningService.createScreening(TEST_SCREENING_DTO);
 
         // Then
-        Mockito.verify(screeningRepositoryMock).save(TEST_SCREENING);
-        Mockito.verify(dateFormatterMock, Mockito.times(2)).parseStringToDate(testTime);
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
+        Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM.getName());
+        Mockito.verify(dateFormatterMock, Mockito.times(2))
+                .parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime());
+        Mockito.verify(dateHandlerMock).addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime());
+        Mockito.verify(dateHandlerMock).addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime() + 10);
+        Mockito.verify(dateFormatterMock).parseStringToDate(testEndsBeforeTime);
+        Mockito.verify(dateHandlerMock).addMinutesToDate(endsBeforeDate, endsBeforeScreening.getMovie().getRunTime());
+        Mockito.verify(dateHandlerMock)
+                .addMinutesToDate(endsBeforeDate, endsBeforeScreening.getMovie().getRunTime() + 10);
+        Mockito.verify(dateFormatterMock).parseStringToDate(testBeginsAfterTime);
+        Mockito.verify(dateHandlerMock).addMinutesToDate(beginsAfterDate, beginsAfterScreening.getMovie().getRunTime());
+        Mockito.verify(dateHandlerMock)
+                .addMinutesToDate(beginsAfterDate, beginsAfterScreening.getMovie().getRunTime() + 10);
+        Mockito.verify(screeningRepositoryMock, Mockito.times(2)).findAll();
+    }
+
+    @Test
+    void testCreateScreeningShouldReturnErrorMessageWhenInputIsValidButScreeningIsOverlappingAfter() throws ParseException {
+        // Given
+        Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+        Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+        Mockito.when(dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime()))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_SCREENING_DTO.getFormattedDateTime())));
+
+        Date screeningDate = dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime())
+                .orElseThrow(() -> new IllegalArgumentException("Can't parse date!"));
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime()))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 13:16"));
+
+        String testOverlapTimeAfter = "2022-12-12 12:30";
+        Mockito.when(dateFormatterMock.parseStringToDate(testOverlapTimeAfter))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(testOverlapTimeAfter)));
+
+        Date existingDate = dateFormatterMock.parseStringToDate(testOverlapTimeAfter).get();
+
+        Screening existingScreening = new Screening(null ,TEST_MOVIE, TEST_ROOM, existingDate);
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(existingDate, existingScreening.getMovie().getRunTime()))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 13:46"));
+
+        Mockito.when(screeningRepositoryMock.findAll()).thenReturn(List.of(existingScreening));
+
+        String expected = "There is an overlapping screening";
+
+        // When
+        String actual = testScreeningService.createScreening(TEST_SCREENING_DTO);
+
+        // Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
+        Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM.getName());
+        Mockito.verify(dateFormatterMock, Mockito.times(2))
+                .parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime());
+        Mockito.verify(dateHandlerMock).addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime());
+        Mockito.verify(dateFormatterMock).parseStringToDate(testOverlapTimeAfter);
+        Mockito.verify(dateHandlerMock).addMinutesToDate(existingDate, existingScreening.getMovie().getRunTime());
+        Mockito.verify(screeningRepositoryMock).findAll();
+    }
+
+    @Test
+    void testCreateScreeningShouldReturnErrorMessageWhenInputIsValidButScreeningIsOverlappingBefore() throws ParseException {
+        // Given
+        Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+        Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+        Mockito.when(dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime()))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_SCREENING_DTO.getFormattedDateTime())));
+
+        Date screeningDate = dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime())
+                .orElseThrow(() -> new IllegalArgumentException("Can't parse date!"));
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime()))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 13:16"));
+
+        String testOverlapTimeBefore = "2022-12-12 11:40";
+        Mockito.when(dateFormatterMock.parseStringToDate(testOverlapTimeBefore))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(testOverlapTimeBefore)));
+
+        Date existingDate = dateFormatterMock.parseStringToDate(testOverlapTimeBefore).get();
+
+        Screening existingScreening = new Screening(null ,TEST_MOVIE, TEST_ROOM, existingDate);
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(existingDate, existingScreening.getMovie().getRunTime()))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 12:56"));
+
+        Mockito.when(screeningRepositoryMock.findAll()).thenReturn(List.of(existingScreening));
+
+        String expected = "There is an overlapping screening";
+
+        // When
+        String actual = testScreeningService.createScreening(TEST_SCREENING_DTO);
+
+        // Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
+        Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM.getName());
+        Mockito.verify(dateFormatterMock, Mockito.times(2))
+                .parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime());
+        Mockito.verify(dateHandlerMock).addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime());
+        Mockito.verify(dateFormatterMock).parseStringToDate(testOverlapTimeBefore);
+        Mockito.verify(dateHandlerMock).addMinutesToDate(existingDate, existingScreening.getMovie().getRunTime());
+        Mockito.verify(screeningRepositoryMock).findAll();
+    }
+
+    @Test
+    void testCreateScreeningShouldReturnErrorMessageWhenInputIsValidButScreeningIsOverlappingWithABreakPeriod()
+            throws ParseException {
+
+        // Given
+        Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+        Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+        Mockito.when(dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime()))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_SCREENING_DTO.getFormattedDateTime())));
+
+        Date screeningDate = dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime())
+                .orElseThrow(() -> new IllegalArgumentException("Can't parse date!"));
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime()))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 13:16"));
+
+        String testOverlapBreakPeriodTime = "2022-12-12 13:20";
+        Mockito.when(dateFormatterMock.parseStringToDate(testOverlapBreakPeriodTime))
+                .thenReturn(Optional.of(testSimpleDateFormat.parse(testOverlapBreakPeriodTime)));
+
+        Date existingDate = dateFormatterMock.parseStringToDate(testOverlapBreakPeriodTime).get();
+
+        Screening existingScreening = new Screening(null ,TEST_MOVIE, TEST_ROOM, existingDate);
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(existingDate, existingScreening.getMovie().getRunTime()))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 14:36"));
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime() + 10))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 13:26"));
+
+        Mockito.when(dateHandlerMock.addMinutesToDate(existingDate, TEST_MOVIE.getRunTime() + 10))
+                .thenReturn(testSimpleDateFormat.parse("2022-12-12 14:46"));
+
+        Mockito.when(screeningRepositoryMock.findAll()).thenReturn(List.of(existingScreening));
+
+        String expected = "This would start in the break period after another screening in this room";
+
+        // When
+        String actual = testScreeningService.createScreening(TEST_SCREENING_DTO);
+
+        // Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(dateFormatterMock, Mockito.times(2))
+                .parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime());
+        Mockito.verify(dateFormatterMock).parseStringToDate(testOverlapBreakPeriodTime);
+        Mockito.verify(dateHandlerMock).addMinutesToDate(existingDate, existingScreening.getMovie().getRunTime());
+        Mockito.verify(dateHandlerMock).addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime());
+        Mockito.verify(dateHandlerMock).addMinutesToDate(screeningDate, TEST_MOVIE.getRunTime() + 10);
+        Mockito.verify(dateHandlerMock).addMinutesToDate(existingDate, TEST_MOVIE.getRunTime() + 10);
+        Mockito.verify(screeningRepositoryMock, Mockito.times(2)).findAll();
         Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
         Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM.getName());
     }
