@@ -92,8 +92,6 @@ public class UserCommand {
     @SuppressWarnings("unused")
     @ShellMethod(key = "sign up")
     public String signUp(String username, String password) {
-        userService.signUp(username, password);
-
-        return username + " account created.";
+        return userService.signUp(username, password);
     }
 }

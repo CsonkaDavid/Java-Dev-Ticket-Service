@@ -182,12 +182,14 @@ class UserServiceImplTest {
         Mockito.when(userRepository.findByUsername(user.getUsername()))
                 .thenReturn(Optional.empty());
 
+        String expected = user.getUsername() + " account created.";
+
         // When
-        testUserService.signUp(user.getUsername(), user.getPassword());
+        String actual = testUserService.signUp(user.getUsername(), user.getPassword());
 
         // Then
+        Assertions.assertEquals(expected, actual);
         Mockito.verify(userRepository).findByUsername(user.getUsername());
-        Mockito.verify(userRepository).save(user);
     }
 
     @Test
@@ -197,9 +199,16 @@ class UserServiceImplTest {
         Mockito.when(userRepository.findByUsername(user.getUsername()))
                 .thenReturn(Optional.of(user));
 
-        // When Then
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> testUserService.signUp(user.getUsername(), "anypassword"));
+        String expected = "Username \""
+                + user.getUsername()
+                + "\" is already taken!";
+
+        // When
+        String actual = testUserService.signUp(user.getUsername(), user.getPassword());
+
+        // Then
+        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(expected, actual);
         Mockito.verify(userRepository).findByUsername(user.getUsername());
     }
 }

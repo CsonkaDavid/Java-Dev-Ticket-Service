@@ -11,7 +11,7 @@ public interface UserService {
 
     Optional<UserDto> signOut();
 
-    void signUp(String username, String password);
+    String signUp(String username, String password);
 
     Optional<UserDto> getCurrentUser();
 }

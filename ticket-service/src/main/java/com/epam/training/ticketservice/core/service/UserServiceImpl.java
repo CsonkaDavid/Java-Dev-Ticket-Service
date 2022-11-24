@@ -60,17 +60,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void signUp(String username, String password) {
+    public String signUp(String username, String password) {
         User user = new User(null, username, password, User.Role.USER);
 
         Optional<User> existingUser = userRepository.findByUsername(username);
 
         if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("Username \""
+            return "Username \""
                     + username
-                    + "\" is already taken!");
+                    + "\" is already taken!";
         }
 
         userRepository.save(user);
+
+        return user.getUsername() + " account created.";
     }
 }
