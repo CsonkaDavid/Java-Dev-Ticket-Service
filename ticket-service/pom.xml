@@ -126,7 +126,8 @@
                 <configuration>
                     <excludes>
                         <exclude>com/epam/training/ticketservice/ui/shell/command/**</exclude>
-                        <exclude>com/epam/training/ticketservice/configuration/PromptConfiguration.*</exclude>
+                        <exclude>com/epam/training/ticketservice/configuration/**</exclude>
+                        <exclude>com/epam/training/ticketservice/core/configuration/**</exclude>
                         <exclude>com/epam/training/ticketservice/Application.*</exclude>
                     </excludes>
                 </configuration>
