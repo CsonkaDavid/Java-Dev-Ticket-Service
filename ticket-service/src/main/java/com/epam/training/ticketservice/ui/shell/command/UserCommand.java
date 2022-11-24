@@ -21,6 +21,7 @@ public class UserCommand {
     @ShellMethod(key = "sign in privileged", value = "Sign in for users with special privileges")
     public String signInPrivileged(String username, String password) {
         Optional<UserDto> user = userService.signInPrivileged(username, password);
+
         if (user.isEmpty()) {
             return "Login failed due to incorrect credentials";
         }
@@ -32,6 +33,7 @@ public class UserCommand {
     @ShellMethod(key = "sign in", value = "Sign in for users")
     public String signIn(String username, String password) {
         Optional<UserDto> user = userService.signIn(username, password);
+
         if (user.isEmpty()) {
             return "Login failed due to incorrect credentials";
         }
@@ -43,6 +45,7 @@ public class UserCommand {
     @ShellMethod(key = "sign out")
     public String signOut() {
         Optional<UserDto> user = userService.signOut();
+
         if (user.isEmpty()) {
             return "You are not signed in";
         }
@@ -54,6 +57,7 @@ public class UserCommand {
     @ShellMethod(key = "describe account", value = "Provides information about the current user")
     public String describe() {
         Optional<UserDto> user = userService.getCurrentUser();
+
         if (user.isEmpty()) {
             return "You are not signed in";
         }
@@ -61,7 +65,9 @@ public class UserCommand {
         String userName = user.get().getUsername();
 
         if (user.get().getRole() == User.Role.ADMIN) {
+
             return "Signed in with privileged account '" + userName + "'";
+
         } else {
 
             StringBuilder stringBuilder = new StringBuilder();
