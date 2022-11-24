@@ -1,8 +1,6 @@
 package com.epam.training.ticketservice.core.configuration;
 
-import com.epam.training.ticketservice.core.entity.BasePrice;
 import com.epam.training.ticketservice.core.entity.User;
-import com.epam.training.ticketservice.core.repository.BasePriceRepository;
 import com.epam.training.ticketservice.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

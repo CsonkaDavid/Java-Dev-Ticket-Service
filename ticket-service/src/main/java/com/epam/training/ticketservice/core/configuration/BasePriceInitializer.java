@@ -3,7 +3,6 @@ package com.epam.training.ticketservice.core.configuration;
 import com.epam.training.ticketservice.core.entity.BasePrice;
 import com.epam.training.ticketservice.core.repository.BasePriceRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
