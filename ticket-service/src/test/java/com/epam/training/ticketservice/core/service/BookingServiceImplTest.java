@@ -4,6 +4,7 @@ import com.epam.training.ticketservice.core.entity.BasePrice;
 import com.epam.training.ticketservice.core.entity.Booking;
 import com.epam.training.ticketservice.core.entity.BookingSeat;
 import com.epam.training.ticketservice.core.entity.Movie;
+import com.epam.training.ticketservice.core.entity.PriceComponent;
 import com.epam.training.ticketservice.core.entity.Room;
 import com.epam.training.ticketservice.core.entity.Screening;
 import com.epam.training.ticketservice.core.entity.User;
@@ -55,13 +56,28 @@ class BookingServiceImplTest {
 
     private final String TEST_TIME_FORMATTED = "2022-12-22 14:00";
 
+    private final PriceComponent TEST_PRICE_COMPONENT = new PriceComponent(null, "dc", -200);
+
     private final User TEST_USER = new User(null, "user", "password", User.Role.USER);
     private final UserDto TEST_USER_DTO = new UserDto(TEST_USER.getUsername(), User.Role.USER);
 
     private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76, null);
+    private final Movie TEST_MOVIE_WITH_PRICE = new Movie(
+            null,
+            "Pricey",
+            "action",
+            76,
+            TEST_PRICE_COMPONENT
+            );
 
     private final Room TEST_ROOM1 = new Room(null, "R1", 15, 20, null);
     private final Room TEST_ROOM2 = new Room(null, "R2", 15, 20, null);
+    private final Room TEST_ROOM_WITH_PRICE = new Room(
+            null,
+            "R3",
+            15,
+            20,
+            TEST_PRICE_COMPONENT);
 
     private final Screening TEST_SCREENING1 = new Screening(null, TEST_MOVIE, TEST_ROOM1, null, null);
     private final ScreeningDto TEST_SCREENING_DTO = new ScreeningDto(
@@ -71,6 +87,19 @@ class BookingServiceImplTest {
             null);
 
     private final Screening TEST_SCREENING2 = new Screening(null, TEST_MOVIE, TEST_ROOM2, null, null);
+
+    private final Screening TEST_SCREENING_WITH_PRICE = new Screening(
+            null,
+            TEST_MOVIE,
+            TEST_ROOM2,
+            null,
+            TEST_PRICE_COMPONENT);
+
+    private final ScreeningDto TEST_SCREENING_WITH_PRICE_DTO = new ScreeningDto(
+            TEST_MOVIE_WITH_PRICE.getTitle(),
+            TEST_ROOM_WITH_PRICE.getName(),
+            TEST_TIME_FORMATTED,
+            TEST_PRICE_COMPONENT.getAmount());
 
     private final BookingSeat TEST_BOOKING_SEAT1 = new BookingSeat(null, 1,2);
     private final BookingSeat TEST_BOOKING_SEAT2 = new BookingSeat(null, 1,3);
@@ -98,12 +127,21 @@ class BookingServiceImplTest {
                 .thenReturn(Optional.of(TEST_MOVIE));
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.of(TEST_ROOM1));
+        Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE_WITH_PRICE.getTitle()))
+                .thenReturn(Optional.of(TEST_MOVIE_WITH_PRICE));
+        Mockito.when(roomRepositoryMock.findByName(TEST_ROOM_WITH_PRICE.getName()))
+                .thenReturn(Optional.of(TEST_ROOM_WITH_PRICE));
         Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
                         TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.of(TEST_SCREENING1));
+        Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
+                        TEST_MOVIE_WITH_PRICE, TEST_ROOM_WITH_PRICE, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
+                .thenReturn(Optional.of(TEST_SCREENING_WITH_PRICE));
+
         User seatTaker = new User(null, "user2", "password2", User.Role.USER);
+
         Booking takenBooking = new Booking(
                 null,
                 seatTaker,
@@ -114,23 +152,33 @@ class BookingServiceImplTest {
         Mockito.when(bookingRepositoryMock.findAllByScreening(TEST_SCREENING1))
                 .thenReturn(List.of(takenBooking));
 
-        String expected = "Seats booked: "
+        String expectedWithBasePrice = "Seats booked: "
                 + "(5,5), (5,6); the price for this booking is"
                 + " 3000 HUF";
 
+        String expectedWithPriceComponents = "Seats booked: "
+                + "(6,5), (6,6); the price for this booking is"
+                + " 1800 HUF";
+
         //When
-        String actual = testBookingService.book(TEST_USER_DTO, TEST_SCREENING_DTO, "5,5 5,6");
+        String actualWithBasePrice = testBookingService.book(TEST_USER_DTO, TEST_SCREENING_DTO, "5,5 5,6");
+        String actualWithPriceComponents = testBookingService
+                .book(TEST_USER_DTO, TEST_SCREENING_WITH_PRICE_DTO, "6,5 6,6");
 
         //Then
-        Assertions.assertEquals(expected, actual);
-        Mockito.verify(userRepositoryMock).findByUsername(TEST_USER.getUsername());
+        Assertions.assertEquals(expectedWithBasePrice, actualWithBasePrice);
+        Assertions.assertEquals(expectedWithPriceComponents, actualWithPriceComponents);
+        Mockito.verify(userRepositoryMock, Mockito.times(2)).findByUsername(TEST_USER.getUsername());
         Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
         Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM1.getName());
-        Mockito.verify(applicationDateFormatterMock).parseStringToDate(TEST_TIME_FORMATTED);
+        Mockito.verify(applicationDateFormatterMock,  Mockito.times(2))
+                .parseStringToDate(TEST_TIME_FORMATTED);
         Mockito.verify(screeningRepositoryMock)
                 .findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM1,
                         testSimpleDateFormat.parse(TEST_TIME_FORMATTED));
         Mockito.verify(bookingRepositoryMock).findAllByScreening(TEST_SCREENING1);
+        Mockito.verify(screeningRepositoryMock).findByMovieAndRoomAndDate(
+                TEST_MOVIE_WITH_PRICE, TEST_ROOM_WITH_PRICE, testSimpleDateFormat.parse(TEST_TIME_FORMATTED));
     }
 
     @Test

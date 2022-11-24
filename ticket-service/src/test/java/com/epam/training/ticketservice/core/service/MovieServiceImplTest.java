@@ -1,6 +1,7 @@
 package com.epam.training.ticketservice.core.service;
 
 import com.epam.training.ticketservice.core.entity.Movie;
+import com.epam.training.ticketservice.core.entity.PriceComponent;
 import com.epam.training.ticketservice.core.model.MovieDto;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import org.junit.jupiter.api.Assertions;
@@ -17,8 +18,23 @@ import java.util.Optional;
 @ExtendWith(MockitoExtension.class)
 class MovieServiceImplTest {
 
+    private final PriceComponent TEST_PRICE_COMPONENT = new PriceComponent(null, "dc", -500);
+
     private final Movie TEST_MOVIE = new Movie(null, "Avengers", "action", 76, null);
     private final MovieDto TEST_MOVIE_DTO = new MovieDto("Avengers", "action", 76, 0);
+
+    private final Movie TEST_MOVIE_WITH_PRICE = new Movie(
+            null,
+            "Avengers",
+            "action",
+            76,
+            TEST_PRICE_COMPONENT);
+    private final MovieDto TEST_MOVIE_WITH_PRICE_DTO = new MovieDto(
+            "Avengers",
+            "action",
+            76,
+            TEST_PRICE_COMPONENT.getAmount());
+
 
     @Mock
     private MovieRepository movieRepository;
@@ -42,6 +58,20 @@ class MovieServiceImplTest {
         //Given
         Mockito.when(movieRepository.findAll()).thenReturn(List.of(TEST_MOVIE));
         List<MovieDto> expected = List.of(TEST_MOVIE_DTO);
+
+        //When
+        List<MovieDto> actual = testMovieService.getMovieList();
+
+        //Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(movieRepository).findAll();
+    }
+
+    @Test
+    void testGetMovieListShouldReturnListWithOneTestElementWithPrice() {
+        //Given
+        Mockito.when(movieRepository.findAll()).thenReturn(List.of(TEST_MOVIE_WITH_PRICE));
+        List<MovieDto> expected = List.of(TEST_MOVIE_WITH_PRICE_DTO);
 
         //When
         List<MovieDto> actual = testMovieService.getMovieList();

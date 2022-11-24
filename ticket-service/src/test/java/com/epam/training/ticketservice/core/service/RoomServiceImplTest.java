@@ -1,5 +1,6 @@
 package com.epam.training.ticketservice.core.service;
 
+import com.epam.training.ticketservice.core.entity.PriceComponent;
 import com.epam.training.ticketservice.core.entity.Room;
 import com.epam.training.ticketservice.core.model.RoomDto;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
@@ -22,8 +23,22 @@ class RoomServiceImplTest {
     @InjectMocks
     private RoomServiceImpl testRoomService;
 
+    private final PriceComponent TEST_PRICE_COMPONENT = new PriceComponent(null, "dc", -500);
+
     private final Room TEST_ROOM = new Room(null, "R1", 15, 20, null);
     private final RoomDto TEST_ROOM_DTO = new RoomDto("R1", 15, 20, 0);
+
+    private final Room TEST_ROOM_WITH_PRICE = new Room(
+            null,
+            "R2",
+            15,
+            20,
+            TEST_PRICE_COMPONENT);
+    private final RoomDto TEST_ROOM_WITH_PRICE_DTO = new RoomDto(
+            "R2",
+            15,
+            20,
+            TEST_PRICE_COMPONENT.getAmount());
 
     @Test
     void testCreateRoomShouldSaveNewRoomWhenInputIsValid() {
@@ -42,6 +57,20 @@ class RoomServiceImplTest {
         //Given
         Mockito.when(roomRepositoryMock.findAll()).thenReturn(List.of(TEST_ROOM));
         List<RoomDto> expected = List.of(TEST_ROOM_DTO);
+
+        //When
+        List<RoomDto> actual = testRoomService.getRoomList();
+
+        //Then
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(roomRepositoryMock).findAll();
+    }
+
+    @Test
+    void testGetRoomListShouldReturnListOfTestedElementWithPrice() {
+        //Given
+        Mockito.when(roomRepositoryMock.findAll()).thenReturn(List.of(TEST_ROOM_WITH_PRICE));
+        List<RoomDto> expected = List.of(TEST_ROOM_WITH_PRICE_DTO);
 
         //When
         List<RoomDto> actual = testRoomService.getRoomList();
