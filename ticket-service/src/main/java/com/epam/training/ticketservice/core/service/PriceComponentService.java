@@ -13,5 +13,8 @@ public interface PriceComponentService {
 
     void updateRoomPriceComponent(String roomName, String componentName);
 
-    void updateScreeningPriceComponent(String movieTitle, String roomName, String formattedDateTime, String componentName);
+    void updateScreeningPriceComponent(String movieTitle,
+                                       String roomName,
+                                       String formattedDateTime,
+                                       String componentName);
 }
