@@ -36,23 +36,24 @@ public class MovieCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update movie")
     public String updateMovie(String title, String genre, Integer runTime) {
-        MovieDto movieDto = new MovieDto(title, genre, runTime, null);
+        MovieDto updateDto = new MovieDto(title, genre, runTime, null);
 
-        movieService.updateMovie(title, movieDto);
+        Optional<MovieDto> newDto = movieService.updateMovie(title, updateDto);
 
-        return movieDto + " updated";
+        if (newDto.isEmpty()) {
+            return "Movie with title '" + title + "' cannot be found";
+        }
+
+        return updateDto + " updated";
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete movie")
     public String deleteMovie(String title) {
-        MovieDto movieDto = movieService.findMovieByTitle(title)
-                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
+        movieService.deleteMovie(title);
 
-        movieService.deleteMovie(movieDto);
-
-        return movieDto +  " deleted";
+        return title +  " deleted";
     }
 
     @SuppressWarnings("unused")

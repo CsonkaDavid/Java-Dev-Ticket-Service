@@ -1,9 +1,6 @@
 package com.epam.training.ticketservice.core.service;
 
-import com.epam.training.ticketservice.core.model.MovieDto;
 import com.epam.training.ticketservice.core.model.PriceComponentDto;
-import com.epam.training.ticketservice.core.model.RoomDto;
-import com.epam.training.ticketservice.core.model.ScreeningDto;
 
 import java.util.Optional;
 
@@ -12,9 +9,9 @@ public interface PriceComponentService {
 
     Optional<PriceComponentDto> findPriceComponentByName(String name);
 
-    void updateMoviePriceComponent(MovieDto movieDto, PriceComponentDto priceComponentDto);
+    void updateMoviePriceComponent(String movieTitle, String componentName);
 
-    void updateRoomPriceComponent(RoomDto roomDto, PriceComponentDto priceComponentDto);
+    void updateRoomPriceComponent(String roomName, String componentName);
 
-    void updateScreeningPriceComponent(ScreeningDto screeningDto, PriceComponentDto priceComponentDto);
+    void updateScreeningPriceComponent(String movieTitle, String roomName, String formattedDateTime, String componentName);
 }

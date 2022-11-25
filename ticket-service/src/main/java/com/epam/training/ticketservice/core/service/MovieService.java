@@ -8,9 +8,9 @@ import java.util.Optional;
 public interface MovieService {
     void createMovie(MovieDto movieDto);
 
-    void updateMovie(String title, MovieDto movieDto);
+    Optional<MovieDto> updateMovie(String title, MovieDto movieDto);
 
-    void deleteMovie(MovieDto movieDto);
+    void deleteMovie(String title);
 
     Optional<MovieDto> findMovieByTitle(String title);
 

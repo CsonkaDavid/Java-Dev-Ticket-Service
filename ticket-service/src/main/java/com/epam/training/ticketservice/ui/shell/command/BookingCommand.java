@@ -35,20 +35,15 @@ public class BookingCommand {
     @ShellMethod(key = "book")
     public String book(String movieTitle, String roomName, String formattedTime, String seats) {
 
-        MovieDto movieDto = movieService.findMovieByTitle(movieTitle)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
+        Optional<UserDto> userDto = userService.getCurrentUser();
 
-        RoomDto roomDto = roomService.findRoomByName(roomName)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        if (userDto.isEmpty()) {
+            return "User is not logged in";
+        }
 
-        UserDto userDto = userService.getCurrentUser()
-                .orElseThrow(() -> new RuntimeException("User is not logged in"));
+        ScreeningDto screeningDto = new ScreeningDto(movieTitle, roomName, formattedTime, 0);
 
-        ScreeningDto screeningDto = screeningService
-                .findScreeningByMovieAndRoomAndDate(movieDto, roomDto, formattedTime)
-                .orElseThrow(() -> new RuntimeException("Screening with these parameters does not exist!"));
-
-        return bookingService.book(userDto, screeningDto, seats);
+        return bookingService.book(userDto.get(), screeningDto, seats);
     }
 
     @SuppressWarnings("unused")
@@ -63,7 +58,7 @@ public class BookingCommand {
 
         ScreeningDto screeningDto = screeningService
                 .findScreeningByMovieAndRoomAndDate(movieDto, roomDto, formattedTime)
-                .orElseThrow(() -> new RuntimeException("Screening with these parameters does not exist!"));
+                .orElseThrow(() -> new IllegalArgumentException("Screening with these parameters does not exist!"));
 
         List<String> splitStringList = Arrays.stream(seats.split(" "))
                 .collect(Collectors.toList());

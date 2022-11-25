@@ -38,12 +38,6 @@ public class ScreeningCommand {
 
         ScreeningDto screeningDto = new ScreeningDto(movieTitle, roomName, formattedDateTime, null);
 
-        MovieDto movieDto = movieService.findMovieByTitle(movieTitle)
-                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given title!"));
-
-        RoomDto roomDto = roomService.findRoomByName(roomName)
-                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
-
         return screeningService.createScreening(screeningDto);
     }
 
@@ -60,6 +54,8 @@ public class ScreeningCommand {
 
         Date date = dateFormatter.parseStringToDate(formattedDateTime)
                 .orElseThrow(() -> new IllegalArgumentException("Can't parse date to " + dateFormatter.getPattern()));
+
+        ScreeningDto screeningDto = new ScreeningDto(movieTitle, roomName, formattedDateTime, null);
 
         screeningService.deleteScreening(movieDto, roomDto, date);
 

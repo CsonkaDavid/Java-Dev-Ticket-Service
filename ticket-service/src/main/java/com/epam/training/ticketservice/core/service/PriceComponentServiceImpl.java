@@ -4,11 +4,7 @@ import com.epam.training.ticketservice.core.entity.Movie;
 import com.epam.training.ticketservice.core.entity.PriceComponent;
 import com.epam.training.ticketservice.core.entity.Room;
 import com.epam.training.ticketservice.core.entity.Screening;
-import com.epam.training.ticketservice.core.model.MovieDto;
 import com.epam.training.ticketservice.core.model.PriceComponentDto;
-import com.epam.training.ticketservice.core.model.RoomDto;
-import com.epam.training.ticketservice.core.model.ScreeningDto;
-import com.epam.training.ticketservice.core.repository.BasePriceRepository;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import com.epam.training.ticketservice.core.repository.PriceComponentRepository;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
@@ -18,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -62,45 +57,50 @@ public class PriceComponentServiceImpl implements PriceComponentService {
     }
 
     @Override
-    public void updateMoviePriceComponent(MovieDto movieDto, PriceComponentDto priceComponentDto) {
-        Movie movie = movieRepository.findByTitle(movieDto.getTitle())
+    public void updateMoviePriceComponent(String movieTitle, String componentName) {
+        Movie movie = movieRepository.findByTitle(movieTitle)
                 .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
 
         PriceComponent priceComponent = priceComponentRepository
-                .findPriceComponentByName(priceComponentDto.getName())
+                .findPriceComponentByName(componentName)
                 .orElseThrow(() -> new IllegalArgumentException("Price component not found"));
 
         movieRepository.updateMoviePriceComponent(movie, priceComponent);
     }
 
     @Override
-    public void updateRoomPriceComponent(RoomDto roomDto, PriceComponentDto priceComponentDto) {
-        Room room = roomRepository.findByName(roomDto.getName())
+    public void updateRoomPriceComponent(String roomName, String componentName) {
+        Room room = roomRepository.findByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
         PriceComponent priceComponent = priceComponentRepository
-                .findPriceComponentByName(priceComponentDto.getName())
+                .findPriceComponentByName(componentName)
                 .orElseThrow(() -> new IllegalArgumentException("Price component not found"));
 
         roomRepository.updateRoomPriceComponent(room, priceComponent);
     }
 
     @Override
-    public void updateScreeningPriceComponent(ScreeningDto screeningDto, PriceComponentDto priceComponentDto) {
-        Movie movie = movieRepository.findByTitle(screeningDto.getMovieTitle())
+    public void updateScreeningPriceComponent(
+            String movieTitle,
+            String roomName,
+            String formattedDateTime,
+            String componentName) {
+
+        Movie movie = movieRepository.findByTitle(movieTitle)
                 .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
 
-        Room room = roomRepository.findByName(screeningDto.getRoomName())
+        Room room = roomRepository.findByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
-        Date date = dateFormatter.parseStringToDate(screeningDto.getFormattedDateTime())
+        Date date = dateFormatter.parseStringToDate(formattedDateTime)
                 .orElseThrow(() -> new IllegalArgumentException("Can't parse date"));
 
         Screening screening = screeningRepository.findByMovieAndRoomAndDate(movie, room, date)
                 .orElseThrow(() -> new IllegalArgumentException("Screening not found"));
 
         PriceComponent priceComponent = priceComponentRepository
-                .findPriceComponentByName(priceComponentDto.getName())
+                .findPriceComponentByName(componentName)
                 .orElseThrow(() -> new IllegalArgumentException("Price component not found"));
 
         screeningRepository.updateScreeningPriceComponent(screening, priceComponent);

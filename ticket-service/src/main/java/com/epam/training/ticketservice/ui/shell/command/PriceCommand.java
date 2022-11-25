@@ -1,16 +1,10 @@
 package com.epam.training.ticketservice.ui.shell.command;
 
 import com.epam.training.ticketservice.core.entity.User;
-import com.epam.training.ticketservice.core.model.MovieDto;
 import com.epam.training.ticketservice.core.model.PriceComponentDto;
-import com.epam.training.ticketservice.core.model.RoomDto;
-import com.epam.training.ticketservice.core.model.ScreeningDto;
 import com.epam.training.ticketservice.core.model.UserDto;
 import com.epam.training.ticketservice.core.service.BasePriceService;
-import com.epam.training.ticketservice.core.service.MovieService;
 import com.epam.training.ticketservice.core.service.PriceComponentService;
-import com.epam.training.ticketservice.core.service.RoomService;
-import com.epam.training.ticketservice.core.service.ScreeningService;
 import com.epam.training.ticketservice.core.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.shell.Availability;
@@ -27,9 +21,6 @@ public class PriceCommand {
     private final BasePriceService basePriceService;
     private final PriceComponentService priceComponentService;
     private final UserService userService;
-    private final MovieService movieService;
-    private final RoomService roomService;
-    private final ScreeningService screeningService;
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
@@ -54,30 +45,18 @@ public class PriceCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "attach price component to movie")
     public String attachPriceToMovie(String componentName, String movieTitle) {
-        MovieDto movieDto = movieService.findMovieByTitle(movieTitle)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
+        priceComponentService.updateMoviePriceComponent(movieTitle, componentName);
 
-        PriceComponentDto priceComponentDto = priceComponentService.findPriceComponentByName(componentName)
-                .orElseThrow(() -> new IllegalArgumentException("PriceComponent not found"));
-
-        priceComponentService.updateMoviePriceComponent(movieDto, priceComponentDto);
-
-        return "PriceComponent: " + priceComponentDto + " attached to Movie: " + movieDto;
+        return "PriceComponent: " + componentName + " attached to Movie: " + movieTitle;
     }
 
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "attach price component to room")
     public String attachPriceToRoom(String componentName, String roomName) {
-        RoomDto roomDto = roomService.findRoomByName(roomName)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        priceComponentService.updateRoomPriceComponent(roomName, componentName);
 
-        PriceComponentDto priceComponentDto = priceComponentService.findPriceComponentByName(componentName)
-                .orElseThrow(() -> new IllegalArgumentException("PriceComponent not found"));
-
-        priceComponentService.updateRoomPriceComponent(roomDto, priceComponentDto);
-
-        return "PriceComponent: " + priceComponentDto + " attached to Room: " + roomDto;
+        return "PriceComponent: " + componentName + " attached to Room: " + roomName;
     }
 
     @SuppressWarnings("unused")
@@ -89,24 +68,10 @@ public class PriceCommand {
             String roomName,
             String formattedDateTime) {
 
-        MovieDto movieDto = movieService.findMovieByTitle(movieTitle)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
+        priceComponentService.updateScreeningPriceComponent(movieTitle, roomName, formattedDateTime, componentName);
 
-        RoomDto roomDto = roomService.findRoomByName(roomName)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
-
-        ScreeningDto screeningDto = screeningService.findScreeningByMovieAndRoomAndDate(
-                movieDto,
-                roomDto,
-                formattedDateTime
-        ).orElseThrow(() -> new IllegalArgumentException("Screening not found"));
-
-        PriceComponentDto priceComponentDto = priceComponentService.findPriceComponentByName(componentName)
-                .orElseThrow(() -> new IllegalArgumentException("PriceComponent not found"));
-
-        priceComponentService.updateScreeningPriceComponent(screeningDto, priceComponentDto);
-
-        return "PriceComponent: " + priceComponentDto + " attached to Screening: " + screeningDto;
+        return "PriceComponent: " + componentName + " attached to Screening: "
+                + "(" + movieTitle + " in " + roomName + " at " + formattedDateTime + ")";
     }
 
     @SuppressWarnings("unused")

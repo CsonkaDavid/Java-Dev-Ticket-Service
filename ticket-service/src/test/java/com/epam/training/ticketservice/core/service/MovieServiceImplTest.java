@@ -85,21 +85,28 @@ class MovieServiceImplTest {
     void testUpdateMovieShouldUpdateGivenMovieWhenInputIsValid() {
         // Given
         Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+        Optional<MovieDto> expected = Optional.of(TEST_MOVIE_DTO);
 
         // When
-        testMovieService.updateMovie(TEST_MOVIE.getTitle(), TEST_MOVIE_DTO);
+        Optional<MovieDto> actual = testMovieService.updateMovie(TEST_MOVIE.getTitle(), TEST_MOVIE_DTO);
 
         // Then
-        Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
+        Assertions.assertEquals(expected, actual);
+        Mockito.verify(movieRepository, Mockito.times(2)).findByTitle(TEST_MOVIE.getTitle());
     }
 
     @Test
-    void testUpdateMovieShouldThrowErrorWhenInputIsInvalid() {
+    void testUpdateMovieShouldReturnEmptyWhenInputIsInvalid() {
         // Given
         Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.empty());
 
-        // When Then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> testMovieService.updateMovie(TEST_MOVIE.getTitle(), TEST_MOVIE_DTO));
+        Optional<MovieDto> expected = Optional.empty();
+
+        // When
+        Optional<MovieDto> actual = testMovieService.updateMovie(TEST_MOVIE.getTitle(), TEST_MOVIE_DTO);
+
+        // Then
+        Assertions.assertEquals(expected, actual);
         Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
     }
 
@@ -109,7 +116,7 @@ class MovieServiceImplTest {
         Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
 
         // When
-        testMovieService.deleteMovie(TEST_MOVIE_DTO);
+        testMovieService.deleteMovie(TEST_MOVIE_DTO.getTitle());
 
         // Then
         Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
@@ -121,7 +128,8 @@ class MovieServiceImplTest {
         Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.empty());
 
         // When Then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> testMovieService.deleteMovie(TEST_MOVIE_DTO));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> testMovieService.deleteMovie(TEST_MOVIE_DTO.getTitle()));
         Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
     }
 

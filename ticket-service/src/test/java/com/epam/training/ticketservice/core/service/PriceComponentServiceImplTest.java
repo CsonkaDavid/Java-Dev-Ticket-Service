@@ -7,7 +7,6 @@ import com.epam.training.ticketservice.core.entity.Screening;
 import com.epam.training.ticketservice.core.model.MovieDto;
 import com.epam.training.ticketservice.core.model.PriceComponentDto;
 import com.epam.training.ticketservice.core.model.RoomDto;
-import com.epam.training.ticketservice.core.model.ScreeningDto;
 import com.epam.training.ticketservice.core.repository.MovieRepository;
 import com.epam.training.ticketservice.core.repository.PriceComponentRepository;
 import com.epam.training.ticketservice.core.repository.RoomRepository;
@@ -21,13 +20,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.swing.text.html.Option;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class PriceComponentServiceImplTest {
@@ -65,9 +61,6 @@ class PriceComponentServiceImplTest {
 
     private final Room TEST_ROOM = new Room(null, "room", 20, 20, null);
     private final RoomDto TEST_ROOM_DTO = new RoomDto( "room", 20, 20, 0);
-
-    private final ScreeningDto TEST_SCREENING_DTO =
-            new ScreeningDto(TEST_MOVIE_DTO.getTitle(), TEST_ROOM_DTO.getName(), TEST_FORMATTED_TIME, 0);
 
     @Test
     void testCreatePriceComponentShouldCreateNewPriceComponentWhenInputIsValid() {
@@ -145,7 +138,7 @@ class PriceComponentServiceImplTest {
                 .thenReturn(Optional.of(TEST_PRICE_COMPONENT));
 
         //When
-        testPriceComponentService.updateMoviePriceComponent(TEST_MOVIE_DTO, TEST_PRICE_COMPONENT_DTO);
+        testPriceComponentService.updateMoviePriceComponent(TEST_MOVIE_DTO.getTitle(), TEST_PRICE_COMPONENT_DTO.getName());
 
         //Then
         Mockito.verify(movieRepositoryMock).updateMoviePriceComponent(TEST_MOVIE, TEST_PRICE_COMPONENT);
@@ -162,7 +155,7 @@ class PriceComponentServiceImplTest {
         //When Then
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> testPriceComponentService
-                        .updateMoviePriceComponent(TEST_MOVIE_DTO, TEST_PRICE_COMPONENT_DTO)
+                        .updateMoviePriceComponent(TEST_MOVIE_DTO.getTitle(), TEST_PRICE_COMPONENT_DTO.getName())
         );
 
         Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
@@ -179,7 +172,7 @@ class PriceComponentServiceImplTest {
         //When Then
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> testPriceComponentService
-                        .updateMoviePriceComponent(TEST_MOVIE_DTO, TEST_PRICE_COMPONENT_DTO)
+                        .updateMoviePriceComponent(TEST_MOVIE_DTO.getTitle(), TEST_PRICE_COMPONENT_DTO.getName())
         );
 
         Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
@@ -195,7 +188,7 @@ class PriceComponentServiceImplTest {
                 .thenReturn(Optional.of(TEST_PRICE_COMPONENT));
 
         //When
-        testPriceComponentService.updateRoomPriceComponent(TEST_ROOM_DTO, TEST_PRICE_COMPONENT_DTO);
+        testPriceComponentService.updateRoomPriceComponent(TEST_ROOM_DTO.getName(), TEST_PRICE_COMPONENT_DTO.getName());
 
         // Then
         Mockito.verify(roomRepositoryMock).updateRoomPriceComponent(TEST_ROOM, TEST_PRICE_COMPONENT);
@@ -212,7 +205,7 @@ class PriceComponentServiceImplTest {
         //When Then
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> testPriceComponentService
-                        .updateRoomPriceComponent(TEST_ROOM_DTO, TEST_PRICE_COMPONENT_DTO)
+                        .updateRoomPriceComponent(TEST_ROOM_DTO.getName(), TEST_PRICE_COMPONENT_DTO.getName())
         );
 
         Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM.getName());
@@ -229,7 +222,7 @@ class PriceComponentServiceImplTest {
         //When Then
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> testPriceComponentService
-                        .updateRoomPriceComponent(TEST_ROOM_DTO, TEST_PRICE_COMPONENT_DTO)
+                        .updateRoomPriceComponent(TEST_ROOM_DTO.getName(), TEST_PRICE_COMPONENT_DTO.getName())
         );
 
         Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM.getName());
@@ -255,7 +248,12 @@ class PriceComponentServiceImplTest {
                 .thenReturn(Optional.of(TEST_PRICE_COMPONENT));
 
         //When
-        testPriceComponentService.updateScreeningPriceComponent(TEST_SCREENING_DTO, TEST_PRICE_COMPONENT_DTO);
+        testPriceComponentService.updateScreeningPriceComponent(
+                TEST_MOVIE.getTitle(),
+                TEST_ROOM.getName(),
+                TEST_FORMATTED_TIME,
+                TEST_PRICE_COMPONENT.getName()
+        );
 
         //Then
         Mockito.verify(screeningRepositoryMock).updateScreeningPriceComponent(screening, TEST_PRICE_COMPONENT);
@@ -274,8 +272,12 @@ class PriceComponentServiceImplTest {
 
         //When Then
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> testPriceComponentService
-                        .updateScreeningPriceComponent(TEST_SCREENING_DTO, TEST_PRICE_COMPONENT_DTO)
+                () -> testPriceComponentService.updateScreeningPriceComponent(
+                        TEST_MOVIE.getTitle(),
+                        TEST_ROOM.getName(),
+                        TEST_FORMATTED_TIME,
+                        TEST_PRICE_COMPONENT.getName()
+                )
         );
 
         Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
@@ -291,8 +293,12 @@ class PriceComponentServiceImplTest {
 
         //When Then
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> testPriceComponentService
-                        .updateScreeningPriceComponent(TEST_SCREENING_DTO, TEST_PRICE_COMPONENT_DTO)
+                () -> testPriceComponentService.updateScreeningPriceComponent(
+                        TEST_MOVIE.getTitle(),
+                        TEST_ROOM.getName(),
+                        TEST_FORMATTED_TIME,
+                        TEST_PRICE_COMPONENT.getName()
+                )
         );
 
         Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
@@ -311,8 +317,12 @@ class PriceComponentServiceImplTest {
 
         //When Then
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> testPriceComponentService
-                        .updateScreeningPriceComponent(TEST_SCREENING_DTO, TEST_PRICE_COMPONENT_DTO)
+                () -> testPriceComponentService.updateScreeningPriceComponent(
+                        TEST_MOVIE.getTitle(),
+                        TEST_ROOM.getName(),
+                        TEST_FORMATTED_TIME,
+                        TEST_PRICE_COMPONENT.getName()
+                )
         );
 
         Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
@@ -337,8 +347,12 @@ class PriceComponentServiceImplTest {
 
         //When Then
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> testPriceComponentService
-                        .updateScreeningPriceComponent(TEST_SCREENING_DTO, TEST_PRICE_COMPONENT_DTO)
+                () -> testPriceComponentService.updateScreeningPriceComponent(
+                        TEST_MOVIE.getTitle(),
+                        TEST_ROOM.getName(),
+                        TEST_FORMATTED_TIME,
+                        TEST_PRICE_COMPONENT.getName()
+                )
         );
 
         Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
@@ -367,8 +381,12 @@ class PriceComponentServiceImplTest {
 
         //When Then
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> testPriceComponentService
-                        .updateScreeningPriceComponent(TEST_SCREENING_DTO, TEST_PRICE_COMPONENT_DTO)
+                () -> testPriceComponentService.updateScreeningPriceComponent(
+                        TEST_MOVIE.getTitle(),
+                        TEST_ROOM.getName(),
+                        TEST_FORMATTED_TIME,
+                        TEST_PRICE_COMPONENT.getName()
+                )
         );
 
         Mockito.verify(movieRepositoryMock).findByTitle(TEST_MOVIE.getTitle());
