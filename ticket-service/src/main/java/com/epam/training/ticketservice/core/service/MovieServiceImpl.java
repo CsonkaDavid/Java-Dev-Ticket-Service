@@ -28,16 +28,11 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Optional<MovieDto> updateMovie(String title, MovieDto movieDto) {
-        Optional<Movie> movie = movieRepository.findByTitle(title);
+    public void updateMovie(String title, MovieDto movieDto) {
+        Movie movie = movieRepository.findByTitle(title)
+                .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
 
-        if (movie.isEmpty()) {
-            return Optional.empty();
-        }
-
-        movieRepository.updateMovie(movie.get().getTitle(), movieDto.getGenre(), movieDto.getRunTime());
-
-        return findMovieByTitle(title);
+        movieRepository.updateMovie(movie.getTitle(), movieDto.getGenre(), movieDto.getRunTime());
     }
 
     @Override
