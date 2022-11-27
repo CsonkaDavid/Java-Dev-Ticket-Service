@@ -75,7 +75,7 @@ public class PriceCommand {
     }
 
     @SuppressWarnings("unused")
-    public Availability isAdminInitiated() {
+    private Availability isAdminInitiated() {
         Optional<UserDto> userDto = userService.getCurrentUser();
 
         return userDto.isPresent() && userDto.get().getRole() == User.Role.ADMIN

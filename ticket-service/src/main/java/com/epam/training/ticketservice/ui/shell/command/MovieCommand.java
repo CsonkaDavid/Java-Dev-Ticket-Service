@@ -38,11 +38,7 @@ public class MovieCommand {
     public String updateMovie(String title, String genre, Integer runTime) {
         MovieDto updateDto = new MovieDto(title, genre, runTime, null);
 
-        Optional<MovieDto> newDto = movieService.updateMovie(title, updateDto);
-
-        if (newDto.isEmpty()) {
-            return "Movie with title '" + title + "' cannot be found";
-        }
+        movieService.updateMovie(title, updateDto);
 
         return updateDto + " updated";
     }
@@ -67,13 +63,17 @@ public class MovieCommand {
 
         return movieDtoList
                 .stream()
-                .map(m -> m.getTitle() + " (" + m.getGenre()
-                        + ", " + m.getRunTime() + " minutes)")
+                .map(m -> m.getTitle()
+                        + " ("
+                        + m.getGenre()
+                        + ", "
+                        + m.getRunTime()
+                        + " minutes)")
                 .collect(Collectors.joining("\n"));
     }
 
     @SuppressWarnings("unused")
-    public Availability isAdminInitiated() {
+    private Availability isAdminInitiated() {
         Optional<UserDto> userDto = userService.getCurrentUser();
 
         return userDto.isPresent() && userDto.get().getRole() == User.Role.ADMIN

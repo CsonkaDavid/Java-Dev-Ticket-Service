@@ -74,7 +74,7 @@ public class BookingCommand {
     }
 
     @SuppressWarnings("unused")
-    public Availability isUserInitiated() {
+    private Availability isUserInitiated() {
         Optional<UserDto> userDto = userService.getCurrentUser();
 
         return userDto.isPresent() && userDto.get().getRole() == User.Role.USER
