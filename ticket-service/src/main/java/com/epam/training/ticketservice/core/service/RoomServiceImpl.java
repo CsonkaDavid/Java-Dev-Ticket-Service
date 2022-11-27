@@ -31,7 +31,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
-        roomRepository.updateMovie(room.getName(), roomDto.getRows(), roomDto.getColumns());
+        roomRepository.updateRoom(room.getName(), roomDto.getRows(), roomDto.getColumns());
     }
 
     @Override
