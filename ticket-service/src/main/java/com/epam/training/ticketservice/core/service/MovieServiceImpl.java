@@ -28,8 +28,8 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void updateMovie(String title, MovieDto movieDto) {
-        Movie movie = movieRepository.findByTitle(title)
+    public void updateMovie(MovieDto movieDto) {
+        Movie movie = movieRepository.findByTitle(movieDto.getTitle())
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
 
         movieRepository.updateMovie(movie.getTitle(), movieDto.getGenre(), movieDto.getRunTime());

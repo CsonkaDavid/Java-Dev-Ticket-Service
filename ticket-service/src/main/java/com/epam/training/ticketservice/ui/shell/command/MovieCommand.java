@@ -36,11 +36,11 @@ public class MovieCommand {
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "update movie")
     public String updateMovie(String title, String genre, Integer runTime) {
-        MovieDto updateDto = new MovieDto(title, genre, runTime, null);
+        MovieDto movieDto = new MovieDto(title, genre, runTime, null);
 
-        movieService.updateMovie(title, updateDto);
+        movieService.updateMovie(movieDto);
 
-        return updateDto + " updated";
+        return movieDto + " updated";
     }
 
     @SuppressWarnings("unused")

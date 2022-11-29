@@ -87,7 +87,7 @@ class MovieServiceImplTest {
         Mockito.when(movieRepository.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
 
         // When
-        testMovieService.updateMovie(TEST_MOVIE.getTitle(), TEST_MOVIE_DTO);
+        testMovieService.updateMovie(TEST_MOVIE_DTO);
 
         // Then
         Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
@@ -100,7 +100,7 @@ class MovieServiceImplTest {
 
         // When Then
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> testMovieService.updateMovie(TEST_MOVIE.getTitle(), TEST_MOVIE_DTO));
+                () -> testMovieService.updateMovie(TEST_MOVIE_DTO));
         Mockito.verify(movieRepository).findByTitle(TEST_MOVIE.getTitle());
     }
 
