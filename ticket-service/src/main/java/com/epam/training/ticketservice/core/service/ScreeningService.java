@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ScreeningService {
     String createScreening(ScreeningDto screeningDto);
 
-    void deleteScreening(MovieDto movieDto, RoomDto roomDto, Date date);
+    String deleteScreening(ScreeningDto screeningDto);
 
     List<ScreeningDto> getScreeningList();
 

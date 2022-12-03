@@ -59,17 +59,29 @@ public class ScreeningServiceImpl implements ScreeningService {
     }
 
     @Override
-    public void deleteScreening(MovieDto movieDto, RoomDto roomDto, Date date) {
-        Movie movie = movieRepository.findByTitle(movieDto.getTitle())
+    public String deleteScreening(ScreeningDto screeningDto) {
+        String movieTitle = screeningDto.getMovieTitle();
+        String roomName = screeningDto.getRoomName();
+        String formattedDateTime = screeningDto.getFormattedDateTime();
+
+        Movie movie = movieRepository.findByTitle(movieTitle)
                 .orElseThrow(() -> new IllegalArgumentException("There is no movie with the given name!"));
 
-        Room room = roomRepository.findByName(roomDto.getName())
+        Room room = roomRepository.findByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
+
+        Date date = dateFormatter.parseStringToDate(formattedDateTime)
+                .orElseThrow(() -> new IllegalArgumentException("Can't parse date to "
+                        + dateFormatter.getPattern()));
 
         Screening screening = screeningRepository.findByMovieAndRoomAndDate(movie, room, date)
                 .orElseThrow(() -> new IllegalArgumentException("There is no screening with these parameters!"));
 
         screeningRepository.delete(screening);
+
+        return movieTitle + " (" + movie.getGenre() + ", " + movie.getRunTime()
+                + " minutes), screened in room " + roomName + ", at " + formattedDateTime
+                +  " screening deleted";
     }
 
     @Override
