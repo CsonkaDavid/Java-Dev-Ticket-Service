@@ -134,6 +134,7 @@ class PriceComponentServiceImplTest {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(priceComponentRepositoryMock.findPriceComponentByName(TEST_PRICE_COMPONENT.getName()))
                 .thenReturn(Optional.of(TEST_PRICE_COMPONENT));
 
@@ -166,6 +167,7 @@ class PriceComponentServiceImplTest {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(priceComponentRepositoryMock.findPriceComponentByName(TEST_PRICE_COMPONENT.getName()))
                 .thenReturn(Optional.empty());
 
@@ -184,6 +186,7 @@ class PriceComponentServiceImplTest {
         //Given
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName()))
                 .thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(priceComponentRepositoryMock.findPriceComponentByName(TEST_PRICE_COMPONENT.getName()))
                 .thenReturn(Optional.of(TEST_PRICE_COMPONENT));
 
@@ -216,6 +219,7 @@ class PriceComponentServiceImplTest {
         //Given
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName()))
                 .thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(priceComponentRepositoryMock.findPriceComponentByName(TEST_PRICE_COMPONENT.getName()))
                 .thenReturn(Optional.empty());
 
@@ -234,8 +238,10 @@ class PriceComponentServiceImplTest {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName()))
                 .thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_FORMATTED_TIME)));
 
@@ -244,6 +250,7 @@ class PriceComponentServiceImplTest {
 
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM, date))
                 .thenReturn(Optional.of(screening));
+
         Mockito.when(priceComponentRepositoryMock.findPriceComponentByName(TEST_PRICE_COMPONENT.getName()))
                 .thenReturn(Optional.of(TEST_PRICE_COMPONENT));
 
@@ -288,6 +295,7 @@ class PriceComponentServiceImplTest {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName()))
                 .thenReturn(Optional.empty());
 
@@ -310,8 +318,10 @@ class PriceComponentServiceImplTest {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName()))
                 .thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
                 .thenReturn(Optional.empty());
 
@@ -335,8 +345,10 @@ class PriceComponentServiceImplTest {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName()))
                 .thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_FORMATTED_TIME)));
 
@@ -366,8 +378,10 @@ class PriceComponentServiceImplTest {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName()))
                 .thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_FORMATTED_TIME)));
 

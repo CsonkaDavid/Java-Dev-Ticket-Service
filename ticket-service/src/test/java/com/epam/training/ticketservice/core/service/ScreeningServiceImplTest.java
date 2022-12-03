@@ -63,7 +63,9 @@ class ScreeningServiceImplTest {
     void testCreateScreeningShouldCreateNewScreeningWhenInputIsValidAndThereAreNoOverlaps() throws ParseException {
         // Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime()))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_SCREENING_DTO.getFormattedDateTime())));
 
@@ -136,7 +138,9 @@ class ScreeningServiceImplTest {
     void testCreateScreeningShouldReturnErrorMessageWhenInputIsValidButScreeningIsOverlappingAfter() throws ParseException {
         // Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime()))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_SCREENING_DTO.getFormattedDateTime())));
 
@@ -180,7 +184,9 @@ class ScreeningServiceImplTest {
     void testCreateScreeningShouldReturnErrorMessageWhenInputIsValidButScreeningIsOverlappingBefore() throws ParseException {
         // Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime()))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_SCREENING_DTO.getFormattedDateTime())));
 
@@ -226,7 +232,9 @@ class ScreeningServiceImplTest {
 
         // Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_SCREENING_DTO.getFormattedDateTime()))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_SCREENING_DTO.getFormattedDateTime())));
 
@@ -291,6 +299,7 @@ class ScreeningServiceImplTest {
     void testCreateScreeningShouldThrowErrorWhenMovieDoesNotExist() throws ParseException {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.empty());
 
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
@@ -322,10 +331,14 @@ class ScreeningServiceImplTest {
     }
 
     @Test
-    void testDeleteScreeningShouldDeleteTestScreeningWhenInputIsValid() throws ParseException {
+    void testDeleteScreeningShouldDeleteTestScreeningWhenInputIsValid() {
         //Given
-        Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
-                .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_FORMATTED_TIME)));
+        try {
+            Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
+                    .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_FORMATTED_TIME)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         Date date = dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME)
                 .orElseThrow(() -> new IllegalArgumentException("Can't parse date!"));
@@ -333,7 +346,9 @@ class ScreeningServiceImplTest {
         Screening TEST_SCREENING = new Screening(null ,TEST_MOVIE, TEST_ROOM, date, null);
 
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM, date))
                 .thenReturn(Optional.of(TEST_SCREENING));
 
@@ -361,7 +376,9 @@ class ScreeningServiceImplTest {
                 .orElseThrow(() -> new IllegalArgumentException("Can't parse date!"));
 
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(TEST_MOVIE, TEST_ROOM, date))
                 .thenReturn(Optional.empty());
 
@@ -391,6 +408,7 @@ class ScreeningServiceImplTest {
     void testDeleteScreeningShouldThrowErrorWhenRoomDoesNotExist() {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.empty());
 
         //When Then
@@ -468,7 +486,9 @@ class ScreeningServiceImplTest {
     void testFindScreeningShouldReturnScreeningWhenInputsAreValid() throws ParseException {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_FORMATTED_TIME)));
 
@@ -503,7 +523,9 @@ class ScreeningServiceImplTest {
     void testFindScreeningShouldReturnScreeningWhenInputsAreValidWithPrice() throws ParseException {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_FORMATTED_TIME)));
 
@@ -543,7 +565,9 @@ class ScreeningServiceImplTest {
     void testFindScreeningShouldReturnOptionalEmptyWhenScreeningDoesNotExist() throws ParseException {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_FORMATTED_TIME)));
 
@@ -587,10 +611,10 @@ class ScreeningServiceImplTest {
     void testFindScreeningShouldThrowErrorWhenRoomDoesNotExist() {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.empty());
 
         //When Then
-
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> testScreeningService
                         .findScreeningByMovieAndRoomAndDate(TEST_MOVIE_DTO, TEST_ROOM_DTO, TEST_FORMATTED_TIME)
@@ -604,11 +628,12 @@ class ScreeningServiceImplTest {
     void testFindScreeningShouldThrowErrorWhenDateCannotBeParsed() {
         //Given
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle())).thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
+
         Mockito.when(dateFormatterMock.parseStringToDate(TEST_FORMATTED_TIME)).thenReturn(Optional.empty());
 
         //When Then
-
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> testScreeningService
                         .findScreeningByMovieAndRoomAndDate(TEST_MOVIE_DTO, TEST_ROOM_DTO, TEST_FORMATTED_TIME)

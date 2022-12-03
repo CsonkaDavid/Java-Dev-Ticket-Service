@@ -121,21 +121,29 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(basePriceRepositoryMock.findAll())
                 .thenReturn(List.of(new BasePrice(1, 1500)));
+
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.of(TEST_ROOM1));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE_WITH_PRICE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE_WITH_PRICE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM_WITH_PRICE.getName()))
                 .thenReturn(Optional.of(TEST_ROOM_WITH_PRICE));
+
         Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
                         TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.of(TEST_SCREENING1));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
                         TEST_MOVIE_WITH_PRICE, TEST_ROOM_WITH_PRICE, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.of(TEST_SCREENING_WITH_PRICE));
@@ -186,14 +194,19 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(basePriceRepositoryMock.findAll())
                 .thenReturn(List.of(new BasePrice(1, 1500)));
+
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.of(TEST_ROOM1));
+
         Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
                         TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.of(TEST_SCREENING1));
@@ -222,14 +235,19 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(basePriceRepositoryMock.findAll())
                 .thenReturn(List.of(new BasePrice(1, 1500)));
+
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.of(TEST_ROOM1));
+
         Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
                         TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.of(TEST_SCREENING1));
@@ -258,14 +276,19 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(basePriceRepositoryMock.findAll())
                 .thenReturn(List.of(new BasePrice(1, 1500)));
+
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.of(TEST_ROOM1));
+
         Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
                         TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.of(TEST_SCREENING1));
@@ -294,14 +317,19 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(basePriceRepositoryMock.findAll())
                 .thenReturn(List.of(new BasePrice(1, 1500)));
+
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.of(TEST_ROOM1));
+
         Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
                         TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.of(TEST_SCREENING1));
@@ -331,14 +359,19 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(basePriceRepositoryMock.findAll())
                 .thenReturn(List.of(new BasePrice(1, 1500)));
+
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.of(TEST_ROOM1));
+
         Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
                         TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.of(TEST_SCREENING1));
@@ -403,6 +436,7 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.empty());
 
@@ -418,8 +452,10 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.empty());
 
@@ -436,10 +472,13 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.of(TEST_ROOM1));
+
         Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
                 .thenReturn(Optional.empty());
 
@@ -457,12 +496,16 @@ class BookingServiceImplTest {
         //Given
         Mockito.when(userRepositoryMock.findByUsername(TEST_USER.getUsername()))
                 .thenReturn(Optional.of(TEST_USER));
+
         Mockito.when(movieRepositoryMock.findByTitle(TEST_MOVIE.getTitle()))
                 .thenReturn(Optional.of(TEST_MOVIE));
+
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM1.getName()))
                 .thenReturn(Optional.of(TEST_ROOM1));
+
         Mockito.when(applicationDateFormatterMock.parseStringToDate(TEST_TIME_FORMATTED))
                 .thenReturn(Optional.of(testSimpleDateFormat.parse(TEST_TIME_FORMATTED)));
+
         Mockito.when(screeningRepositoryMock.findByMovieAndRoomAndDate(
                 TEST_MOVIE, TEST_ROOM1, testSimpleDateFormat.parse(TEST_TIME_FORMATTED)))
                 .thenReturn(Optional.empty());
