@@ -31,7 +31,7 @@ public class BookingCommand {
     private final UserService userService;
 
     @SuppressWarnings("unused")
-    @ShellMethodAvailability("isUserInitiated")
+    @ShellMethodAvailability("isUserLoggedIn")
     @ShellMethod(key = "book")
     public String book(String movieTitle, String roomName, String formattedTime, String seats) {
 
@@ -74,7 +74,7 @@ public class BookingCommand {
     }
 
     @SuppressWarnings("unused")
-    private Availability isUserInitiated() {
+    private Availability isUserLoggedIn() {
         Optional<UserDto> userDto = userService.getCurrentUser();
 
         return userDto.isPresent() && userDto.get().getRole() == User.Role.USER
