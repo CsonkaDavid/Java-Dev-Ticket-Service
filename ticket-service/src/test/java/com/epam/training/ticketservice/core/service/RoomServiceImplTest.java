@@ -26,6 +26,7 @@ class RoomServiceImplTest {
     private final PriceComponent TEST_PRICE_COMPONENT = new PriceComponent(null, "dc", -500);
 
     private final Room TEST_ROOM = new Room(null, "R1", 15, 20, null);
+
     private final RoomDto TEST_ROOM_DTO = new RoomDto("R1", 15, 20, 0);
 
     private final Room TEST_ROOM_WITH_PRICE = new Room(
@@ -34,6 +35,7 @@ class RoomServiceImplTest {
             15,
             20,
             TEST_PRICE_COMPONENT);
+
     private final RoomDto TEST_ROOM_WITH_PRICE_DTO = new RoomDto(
             "R2",
             15,
@@ -111,7 +113,7 @@ class RoomServiceImplTest {
         Mockito.when(roomRepositoryMock.findByName(TEST_ROOM.getName())).thenReturn(Optional.of(TEST_ROOM));
 
         // When
-        testRoomService.deleteRoom(TEST_ROOM_DTO);
+        testRoomService.deleteRoom(TEST_ROOM_DTO.getName());
 
         // Then
         Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM.getName());
@@ -125,7 +127,7 @@ class RoomServiceImplTest {
 
         // When Then
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> testRoomService.deleteRoom(TEST_ROOM_DTO));
+                () -> testRoomService.deleteRoom(TEST_ROOM_DTO.getName()));
         Mockito.verify(roomRepositoryMock).findByName(TEST_ROOM.getName());
     }
 

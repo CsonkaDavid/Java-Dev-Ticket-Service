@@ -10,7 +10,7 @@ public interface RoomService {
 
     void updateRoom(String name, RoomDto roomDto);
 
-    void deleteRoom(RoomDto roomDto);
+    void deleteRoom(String roomName);
 
     Optional<RoomDto> findRoomByName(String name);
 

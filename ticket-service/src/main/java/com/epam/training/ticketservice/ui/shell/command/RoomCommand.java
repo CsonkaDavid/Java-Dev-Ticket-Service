@@ -46,16 +46,10 @@ public class RoomCommand {
     @SuppressWarnings("unused")
     @ShellMethodAvailability("isAdminInitiated")
     @ShellMethod(key = "delete room")
-    public String deleteRoom(String name) {
-        RoomDto roomDto = roomService.getRoomList()
-                .stream()
-                .filter(r -> r.getName().equals(name))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
+    public String deleteRoom(String roomName) {
+        roomService.deleteRoom(roomName);
 
-        roomService.deleteRoom(roomDto);
-
-        return roomDto +  " deleted";
+        return roomName +  " deleted";
     }
 
     @SuppressWarnings("unused")

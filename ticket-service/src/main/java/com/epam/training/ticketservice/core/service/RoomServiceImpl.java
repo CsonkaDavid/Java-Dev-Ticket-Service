@@ -35,8 +35,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void deleteRoom(RoomDto roomDto) {
-        Room room = roomRepository.findByName(roomDto.getName())
+    public void deleteRoom(String roomName) {
+        Room room = roomRepository.findByName(roomName)
                 .orElseThrow(() -> new IllegalArgumentException("There is no room with the given name!"));
 
         roomRepository.delete(room);
